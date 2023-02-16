@@ -1,18 +1,28 @@
+import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.script.GhidraScript;
-import ghidra.program.model.block.BasicBlockModel;
-import utils.CFG;
+import utils.ControlFlowGraph;
 
 public class PointerMinerScript extends GhidraScript {
+    private DecompInterface dIf;
+
+    public PointerMinerScript() {
+        dIf = new DecompInterface();
+        dIf.setOptions(new DecompileOptions());
+    }
+
     @Override
     public void run() throws Exception {
-        var bbModel = new BasicBlockModel(currentProgram);
-        var funcMgr = currentProgram.getFunctionManager();
-        for (var curFunc : funcMgr.getFunctions(true)) {
-            printf("Function: %s ( %s )\n", curFunc.getName(),
-                curFunc.getEntryPoint());
-            var bbIter =
-                bbModel.getCodeBlocksContaining(curFunc.getBody(), monitor);
-            var cfg = new CFG(curFunc.getName(), bbIter, monitor);
+        dIf.openProgram(currentProgram);
+
+        for (var f = getFirstFunction(); f != null; f = getFunctionAfter(f)) {
+            var res = dIf.decompileFunction(f, 30, null);
+            var hF = res.getHighFunction();
+            if (hF == null) {
+                continue;
+            }
+
+            var cfg = new ControlFlowGraph(hF);
             printf("CFG: %s\n", cfg.genDot());
         }
     }

@@ -1,10 +1,14 @@
 digraph foo {
-    "[Lghidra.program.model.address.Address;@49a4333c"[label="Block0"]
-    "[Lghidra.program.model.address.Address;@14d10729"[label="Block1"]
-    "[Lghidra.program.model.address.Address;@7a36d1ff"[label="Block2"]
-    "[Lghidra.program.model.address.Address;@143ef6e2"[label="Block3"]
-    "[Lghidra.program.model.address.Address;@49a4333c" -> "[Lghidra.program.model.address.Address;@143ef6e2"
-    "[Lghidra.program.model.address.Address;@14d10729" -> "[Lghidra.program.model.address.Address;@49a4333c"
-    "[Lghidra.program.model.address.Address;@14d10729" -> "[Lghidra.program.model.address.Address;@7a36d1ff"
-    "[Lghidra.program.model.address.Address;@7a36d1ff" -> "[Lghidra.program.model.address.Address;@143ef6e2"
+    "entry"[label="Entry"]
+    "exit"[label="Exit"]
+    "100003f60"[label="Block0:100003f60"]
+    "100003f76"[label="Block1:100003f76"]
+    "100003f82"[label="Block2:100003f82"]
+    "100003f89"[label="Block3:100003f89"]
+    "entry" -> "100003f60"
+    "100003f89" -> "exit"
+    "100003f60" -> "100003f82"
+    "100003f60" -> "100003f76"
+    "100003f76" -> "100003f89"
+    "100003f82" -> "100003f89"
 }

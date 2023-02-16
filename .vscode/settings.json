@@ -22,6 +22,7 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/opt/ghidra/**/*.jar"
+        "/opt/ghidra/**/*.jar",
+        "/usr/local/Caskroom/ghidra/10.2.3-20230208/ghidra_10.2.3_PUBLIC/Ghidra/**/*.jar"
     ]
 }

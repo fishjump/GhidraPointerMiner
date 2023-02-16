@@ -1,3 +1,6 @@
+# macOS cache
+.DS_Store
+
 # Compiled example binaries
 example/main
 

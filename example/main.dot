@@ -1,10 +1,14 @@
 digraph foo {
     "entry"[label="Entry"]
     "exit"[label="Exit"]
-    "100003f60"[label="Block0:100003f60"]
-    "100003f76"[label="Block1:100003f76"]
-    "100003f82"[label="Block2:100003f82"]
-    "100003f89"[label="Block3:100003f89"]
+    "100003f60"[label="Block0:100003f60
+ ---  CBRANCH (ram, 0x100003f82, 1) , (register, 0x38, 1)\n"]
+    "100003f76"[label="Block1:100003f76
+(stack, 0xfffffffffffffff4, 4) COPY (const, 0x1, 4)\n ---  BRANCH (ram, 0x100003f89, 1)\n"]
+    "100003f82"[label="Block2:100003f82
+(stack, 0xfffffffffffffff4, 4) COPY (const, 0x2, 4)\n"]
+    "100003f89"[label="Block3:100003f89
+(stack, 0xfffffffffffffff4, 4) MULTIEQUAL (stack, 0xfffffffffffffff4, 4) , (stack, 0xfffffffffffffff4, 4)\n(register, 0x0, 4) COPY (stack, 0xfffffffffffffff4, 4)\n ---  RETURN (const, 0x0, 8) , (register, 0x0, 4)\n"]
     "entry" -> "100003f60"
     "100003f89" -> "exit"
     "100003f60" -> "100003f82"

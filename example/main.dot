@@ -1,0 +1,10 @@
+digraph foo {
+    "[Lghidra.program.model.address.Address;@49a4333c"[label="Block0"]
+    "[Lghidra.program.model.address.Address;@14d10729"[label="Block1"]
+    "[Lghidra.program.model.address.Address;@7a36d1ff"[label="Block2"]
+    "[Lghidra.program.model.address.Address;@143ef6e2"[label="Block3"]
+    "[Lghidra.program.model.address.Address;@49a4333c" -> "[Lghidra.program.model.address.Address;@143ef6e2"
+    "[Lghidra.program.model.address.Address;@14d10729" -> "[Lghidra.program.model.address.Address;@49a4333c"
+    "[Lghidra.program.model.address.Address;@14d10729" -> "[Lghidra.program.model.address.Address;@7a36d1ff"
+    "[Lghidra.program.model.address.Address;@7a36d1ff" -> "[Lghidra.program.model.address.Address;@143ef6e2"
+}

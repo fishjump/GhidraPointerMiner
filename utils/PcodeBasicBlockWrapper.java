@@ -3,10 +3,10 @@ package utils;
 import ghidra.program.model.pcode.PcodeBlock;
 import ghidra.program.model.pcode.PcodeBlockBasic;
 
-public class ComparablePcodeBasicBlock implements Comparable<ComparablePcodeBasicBlock> {
+public class PcodeBasicBlockWrapper implements Comparable<PcodeBasicBlockWrapper> {
     private final PcodeBlockBasic block;
 
-    public ComparablePcodeBasicBlock(PcodeBlockBasic block) {
+    public PcodeBasicBlockWrapper(PcodeBlockBasic block) {
         this.block = block;
     }
 
@@ -15,7 +15,7 @@ public class ComparablePcodeBasicBlock implements Comparable<ComparablePcodeBasi
     }
 
     @Override
-    public int compareTo(ComparablePcodeBasicBlock rhs) {
+    public int compareTo(PcodeBasicBlockWrapper rhs) {
         return this.block.getStart().compareTo(rhs.block.getStart());
     }
 

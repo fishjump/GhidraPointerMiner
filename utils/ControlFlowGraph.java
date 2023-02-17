@@ -6,7 +6,7 @@ import ghidra.program.model.pcode.HighFunction;
 
 public class ControlFlowGraph {
     final private HighFunction f;
-    final private TreeMap<ComparablePcodeBasicBlock, BasicBlockContext> bbCtxMap;
+    final private TreeMap<PcodeBasicBlockWrapper, BasicBlockContext> bbCtxMap;
 
     final private BasicBlockContext entry;
     final private BasicBlockContext exit;
@@ -40,7 +40,7 @@ public class ControlFlowGraph {
                 }
             }
 
-            bbCtxMap.put(new ComparablePcodeBasicBlock(bb), ctx);
+            bbCtxMap.put(new PcodeBasicBlockWrapper(bb), ctx);
         });
 
     }

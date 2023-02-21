@@ -1,7 +1,7 @@
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.script.GhidraScript;
-import utils.ControlFlowGraph;
+import utils.Controlflow;
 
 public class PointerMinerScript extends GhidraScript {
     private DecompInterface dIf;
@@ -22,7 +22,7 @@ public class PointerMinerScript extends GhidraScript {
                 continue;
             }
 
-            var cfg = new ControlFlowGraph(hF);
+            var cfg = new Controlflow(hF);
             printf("CFG: %s\n", cfg.genDot());
         }
     }

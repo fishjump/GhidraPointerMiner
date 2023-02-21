@@ -4,14 +4,14 @@ import java.util.TreeMap;
 
 import ghidra.program.model.pcode.HighFunction;
 
-public class ControlFlowGraph {
+public class Controlflow {
     final private HighFunction f;
     final private TreeMap<PcodeBasicBlockWrapper, BasicBlockContext> bbCtxMap;
 
     final private BasicBlockContext entry;
     final private BasicBlockContext exit;
 
-    public ControlFlowGraph(HighFunction f)
+    public Controlflow(HighFunction f)
             throws Exception {
         this.f = f;
         bbCtxMap = new TreeMap<>();

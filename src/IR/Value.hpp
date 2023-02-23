@@ -1,8 +1,8 @@
 #pragma once
 
-#include <boost/assert.hpp>
-#include <boost/json.hpp>
 #include <string>
+
+#include <boost/json.hpp>
 
 namespace pointer_solver {
 
@@ -10,11 +10,9 @@ class Value {
   std::string name_;
 
 public:
-  Value(const boost::json::string &name) : name_(name) {
-    BOOST_ASSERT_MSG(!name.empty(), "name cannot be empty");
-  }
+  Value(const boost::json::string &name);
 
-  const std::string &getName() const { return name_; }
+  const std::string &getName() const;
 };
 
 } // namespace pointer_solver

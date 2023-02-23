@@ -17,7 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories(include)
 
 # Add source files
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Add Boost library
 find_package(Boost COMPONENTS json REQUIRED)

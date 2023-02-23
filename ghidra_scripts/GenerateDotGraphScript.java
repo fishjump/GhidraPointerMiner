@@ -1,10 +1,11 @@
+package ghidra_scripts;
 // Generate dot graph for the current program
 // @category PCode
 
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.script.GhidraScript;
-import utils.Controlflow;
+import ghidra_scripts.utils.Controlflow;
 
 public class GenerateDotGraphScript extends GhidraScript {
     private final DecompInterface decompiler;

@@ -1,3 +1,4 @@
+package ghidra_scripts;
 // Dumps the pcode into a nested json.
 // @category PCode
 
@@ -9,7 +10,7 @@ import com.google.gson.GsonBuilder;
 
 import ghidra.app.script.GhidraScript;
 import ghidra.util.Msg;
-import utils.ProgramDumper;
+import ghidra_scripts.utils.ProgramDumper;
 
 public class ExportPCodeToJsonScript extends GhidraScript {
 

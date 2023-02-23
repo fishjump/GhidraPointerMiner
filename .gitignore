@@ -1,6 +1,9 @@
 # macOS cache
 .DS_Store
 
+# Build directory
+build
+
 # C++ compiled object files
 *.o
 *.obj

@@ -1,4 +1,4 @@
-package ghidra_scripts.utils;
+package utils;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,10 +21,10 @@ public class InstructionDumper {
         final var jsonArray = new JsonArray();
 
         jsonObject.addProperty("type", "instruction");
-        jsonObject.addProperty("operation", pcodeOp.getOpcode());
+        jsonObject.addProperty("operation", PcodeOpNames.get(pcodeOp.getOpcode()));
 
         if (pcodeOp.isAssignment()) {
-            jsonObject.addProperty("operation", PcodeOpNames.get(pcodeOp.getOpcode()));
+            jsonObject.addProperty("result", pcodeOp.getOutput().toString());
         } else {
             jsonObject.add("result", null);
         }

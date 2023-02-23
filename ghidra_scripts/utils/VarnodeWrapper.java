@@ -1,4 +1,4 @@
-package ghidra_scripts.utils;
+package utils;
 
 import ghidra.program.model.pcode.Varnode;
 

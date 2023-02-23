@@ -3,19 +3,18 @@ package utils;
 import ghidra.program.model.pcode.Varnode;
 
 public class VarnodeWrapper implements Comparable<VarnodeWrapper> {
-    private Varnode var_;
+    private final Varnode varnode;
 
-    public VarnodeWrapper(Varnode var) {
-        var_ = var;
+    public VarnodeWrapper(Varnode varnode) {
+        this.varnode = varnode;
     }
 
     public Varnode unwrap() {
-        return var_;
+        return varnode;
     }
 
     @Override
-    public int compareTo(VarnodeWrapper lhs) {
-        return var_.toString().compareTo(lhs.unwrap().toString());
+    public int compareTo(VarnodeWrapper other) {
+        return varnode.toString().compareTo(other.unwrap().toString());
     }
-
 }

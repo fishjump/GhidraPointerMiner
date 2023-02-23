@@ -5,85 +5,84 @@ import java.util.TreeMap;
 import ghidra.program.model.pcode.HighFunction;
 
 public class Controlflow {
-    final private HighFunction f;
-    final private TreeMap<PcodeBasicBlockWrapper, BasicBlockContext> bbCtxMap;
+    private final HighFunction highFunction;
+    private final TreeMap<PcodeBlockBasicWrapper, BasicBlockContext> basicBlockContexts;
+    private final BasicBlockContext entry;
+    private final BasicBlockContext exit;
 
-    final private BasicBlockContext entry;
-    final private BasicBlockContext exit;
-
-    public Controlflow(HighFunction f)
-            throws Exception {
-        this.f = f;
-        bbCtxMap = new TreeMap<>();
+    public Controlflow(final HighFunction highFunction) {
+        this.highFunction = highFunction;
+        basicBlockContexts = new TreeMap<>();
         entry = new BasicBlockContext();
         exit = new BasicBlockContext();
 
-        var bbList = f.getBasicBlocks();
-        bbList.forEach(bb -> {
-            var ctx = new BasicBlockContext();
+        for (final var basicBlock : highFunction.getBasicBlocks()) {
+            final var context = new BasicBlockContext();
 
-            if (bb.getInSize() == 0) {
-                entry.succs.add(bb);
+            if (basicBlock.getInSize() == 0) {
+                entry.succs.add(basicBlock);
             } else {
-                for (int i = 0; i < bb.getInSize(); i++) {
-                    var pred = bb.getIn(i);
-                    ctx.preds.add(pred);
+                for (int i = 0; i < basicBlock.getInSize(); i++) {
+                    final var predecessor = basicBlock.getIn(i);
+                    context.preds.add(predecessor);
                 }
             }
 
-            if (bb.getOutSize() == 0) {
-                exit.preds.add(bb);
+            if (basicBlock.getOutSize() == 0) {
+                exit.preds.add(basicBlock);
             } else {
-                for (int i = 0; i < bb.getOutSize(); i++) {
-                    var succ = bb.getOut(i);
-                    ctx.succs.add(succ);
+                for (int i = 0; i < basicBlock.getOutSize(); i++) {
+                    final var successor = basicBlock.getOut(i);
+                    context.succs.add(successor);
                 }
             }
 
-            bbCtxMap.put(new PcodeBasicBlockWrapper(bb), ctx);
-        });
+            basicBlockContexts.put(new PcodeBlockBasicWrapper(basicBlock), context);
+        }
+    }
 
+    public TreeMap<PcodeBlockBasicWrapper, BasicBlockContext> getBasicBlockContexts() {
+        return basicBlockContexts;
     }
 
     public String genDot() {
-        var sb = new StringBuilder();
+        final var sb = new StringBuilder();
 
-        sb.append(String.format("digraph %s {\n", f.getFunction().getName()));
+        sb.append(String.format("digraph %s {\n", highFunction.getFunction().getName()));
         sb.append("    \"entry\"[label=\"Entry\"]\n");
         sb.append("    \"exit\"[label=\"Exit\"]\n");
 
         int i = 0;
-        for (var set : bbCtxMap.entrySet()) {
-            var bb = set.getKey();
+        for (final var entry : basicBlockContexts.entrySet()) {
+            final var basicBlock = entry.getKey();
             sb.append(String.format("    \"%s\"[label=\"Block%d:%s\n%s\"]\n",
-                    bb.unwrap().getStart().toString(), i,
-                    bb.unwrap().getStart().toString(), bb.dumpInstructions()));
+                    basicBlock.unwrap().getStart().toString(), i,
+                    basicBlock.unwrap().getStart().toString(), basicBlock.dumpInstructions()));
             i++;
-
         }
 
-        for (var bb : entry.succs) {
+        for (final var basicBlock : entry.succs) {
             sb.append(
-                    String.format("    \"entry\" -> \"%s\"\n", bb.getStart().toString()));
+                    String.format("    \"entry\" -> \"%s\"\n", basicBlock.getStart().toString()));
         }
 
-        for (var bb : exit.preds) {
+        for (final var basicBlock : exit.preds) {
             sb.append(
-                    String.format("    \"%s\" -> \"exit\"\n", bb.getStart().toString()));
+                    String.format("    \"%s\" -> \"exit\"\n", basicBlock.getStart().toString()));
         }
 
-        for (var set : bbCtxMap.entrySet()) {
-            var bb = set.getKey();
-            var ctx = set.getValue();
+        for (final var entry : basicBlockContexts.entrySet()) {
+            final var basicBlock = entry.getKey();
+            final var context = entry.getValue();
 
-            for (var succ : ctx.succs) {
+            for (final var successor : context.succs) {
                 sb.append(String.format("    \"%s\" -> \"%s\"\n",
-                        bb.unwrap().getStart().toString(),
-                        succ.getStart().toString()));
+                        basicBlock.unwrap().getStart().toString(),
+                        successor.getStart().toString()));
             }
         }
 
-        sb.append(String.format("}\n", f.getFunction().getName()));
+        sb.append(String.format("}\n", highFunction.getFunction().getName()));
 
         return sb.toString();
     }

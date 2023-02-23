@@ -1,151 +1,542 @@
 {
-    "type": "program",
-    "functions": [
+  "type": "program",
+  "functions": [
+    {
+      "type": "function",
+      "basic-blocks": [
         {
-            "type": "function",
-            "basic-blocks": [
-                {
-                    "type": "basic-block",
-                    "instructions": [
-                        {
-                            "type": "instruction",
-                            "operation": 5,
-                            "result": null,
-                            "operands": [
-                                "(ram, 0x100003f82, 1)",
-                                "(register, 0x38, 1)"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "basic-block",
-                    "instructions": [
-                        {
-                            "type": "instruction",
-                            "operation": 1,
-                            "result": "(stack, 0xfffffffffffffff4, 4)",
-                            "operands": [
-                                "(const, 0x2, 4)"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "basic-block",
-                    "instructions": [
-                        {
-                            "type": "instruction",
-                            "operation": 1,
-                            "result": "(stack, 0xfffffffffffffff4, 4)",
-                            "operands": [
-                                "(const, 0x1, 4)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 4,
-                            "result": null,
-                            "operands": [
-                                "(ram, 0x100003f89, 1)"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "basic-block",
-                    "instructions": [
-                        {
-                            "type": "instruction",
-                            "operation": 60,
-                            "result": "(stack, 0xfffffffffffffff4, 4)",
-                            "operands": [
-                                "(stack, 0xfffffffffffffff4, 4)",
-                                "(stack, 0xfffffffffffffff4, 4)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 1,
-                            "result": "(register, 0x0, 4)",
-                            "operands": [
-                                "(stack, 0xfffffffffffffff4, 4)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 10,
-                            "result": null,
-                            "operands": [
-                                "(const, 0x0, 8)",
-                                "(register, 0x0, 4)"
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "variables": [
+          "type": "basic-block",
+          "id": "00101004",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 7,
+              "result": "(register, 0x0, 4)",
+              "operands": [
+                "(ram, 0x105018, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(register, 0x0, 4)",
+              "operands": [
+                "(register, 0x0, 4)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
                 "(const, 0x0, 8)",
-                "(const, 0x1, 4)",
-                "(const, 0x2, 4)",
-                "(ram, 0x100003f82, 1)",
-                "(ram, 0x100003f89, 1)",
-                "(register, 0x0, 4)",
-                "(register, 0x38, 1)",
-                "(stack, 0xfffffffffffffff4, 4)"
-            ]
+                "(register, 0x0, 4)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)",
+        "(ram, 0x105018, 8)",
+        "(register, 0x0, 4)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101024",
+          "preds": [],
+          "succs": [
+            "00101045"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 66,
+              "result": "(register, 0x20, 8)",
+              "operands": [
+                "(register, 0x20, 8)",
+                "(const, 0x8, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 66,
+              "result": "(register, 0x20, 8)",
+              "operands": [
+                "(register, 0x20, 8)",
+                "(const, 0xfffffffffffffff8, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 66,
+              "result": "(unique, 0x10000031, 8)",
+              "operands": [
+                "(const, 0x0, 8)",
+                "(const, 0x101136, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x105008, 8)",
+                "(unique, 0x10000031, 8)",
+                "(stack, 0x0, 8)",
+                "(register, 0x20, 8)",
+                "(const, 0x0, 8)",
+                "(const, 0x0, 8)",
+                "(register, 0x10, 8)",
+                "(register, 0x20, 8)"
+              ]
+            }
+          ]
         },
         {
-            "type": "function",
-            "basic-blocks": [
-                {
-                    "type": "basic-block",
-                    "instructions": [
-                        {
-                            "type": "instruction",
-                            "operation": 7,
-                            "result": null,
-                            "operands": [
-                                "(ram, 0x100003f60, 8)",
-                                "(const, 0x1, 1)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 7,
-                            "result": null,
-                            "operands": [
-                                "(ram, 0x100003f60, 8)",
-                                "(const, 0x0, 1)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 1,
-                            "result": "(register, 0x0, 8)",
-                            "operands": [
-                                "(const, 0x0, 8)"
-                            ]
-                        },
-                        {
-                            "type": "instruction",
-                            "operation": 10,
-                            "result": null,
-                            "operands": [
-                                "(const, 0x0, 8)",
-                                "(register, 0x0, 8)"
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "variables": [
-                "(const, 0x0, 1)",
-                "(const, 0x0, 8)",
-                "(const, 0x1, 1)",
-                "(ram, 0x100003f60, 8)",
-                "(register, 0x0, 8)"
-            ]
+          "type": "basic-block",
+          "id": "00101045",
+          "preds": [
+            "00101024",
+            "00101045"
+          ],
+          "succs": [
+            "00101045"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 4,
+              "operands": [
+                "(ram, 0x101045, 1)"
+              ]
+            }
+          ]
         }
-    ]
+      ],
+      "variables": [
+        "(const, 0x0, 8)",
+        "(const, 0x101136, 8)",
+        "(const, 0x8, 8)",
+        "(const, 0xfffffffffffffff8, 8)",
+        "(ram, 0x101045, 1)",
+        "(ram, 0x105008, 8)",
+        "(register, 0x10, 8)",
+        "(register, 0x20, 8)",
+        "(stack, 0x0, 8)",
+        "(unique, 0x10000031, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101050",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101080",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "001010c4",
+          "preds": [],
+          "succs": [
+            "001010cd",
+            "00101100"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 12,
+              "result": "(register, 0x206, 1)",
+              "operands": [
+                "(ram, 0x104010, 1)",
+                "(const, 0x0, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 5,
+              "operands": [
+                "(ram, 0x101100, 1)",
+                "(register, 0x206, 1)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic-block",
+          "id": "001010cd",
+          "preds": [
+            "001010c4"
+          ],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 66,
+              "result": "(unique, 0x10000035, 8)",
+              "operands": [
+                "(const, 0x0, 8)",
+                "(const, 0x104008, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 61,
+              "result": "(ram, 0x104010, 1)",
+              "operands": [
+                "(ram, 0x104010, 1)",
+                "(const, 0x1d, 4)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x105000, 8)",
+                "(unique, 0x10000035, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 61,
+              "result": "(ram, 0x104010, 1)",
+              "operands": [
+                "(ram, 0x104010, 1)",
+                "(const, 0x20, 4)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x101050, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(ram, 0x104010, 1)",
+              "operands": [
+                "(const, 0x1, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(ram, 0x104010, 1)",
+              "operands": [
+                "(ram, 0x104010, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic-block",
+          "id": "00101100",
+          "preds": [
+            "001010c4"
+          ],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(ram, 0x104010, 1)",
+              "operands": [
+                "(ram, 0x104010, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 1)",
+        "(const, 0x0, 8)",
+        "(const, 0x1, 1)",
+        "(const, 0x104008, 8)",
+        "(const, 0x1d, 4)",
+        "(const, 0x20, 4)",
+        "(ram, 0x101050, 8)",
+        "(ram, 0x101100, 1)",
+        "(ram, 0x104010, 1)",
+        "(ram, 0x105000, 8)",
+        "(register, 0x206, 1)",
+        "(unique, 0x10000035, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101114",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x101080, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)",
+        "(ram, 0x101080, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101119",
+          "preds": [],
+          "succs": [
+            "0010112f",
+            "00101128"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 5,
+              "operands": [
+                "(ram, 0x10112f, 1)",
+                "(register, 0x38, 1)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic-block",
+          "id": "00101128",
+          "preds": [
+            "00101119"
+          ],
+          "succs": [
+            "00101134"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(register, 0x0, 8)",
+              "operands": [
+                "(const, 0x1, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 4,
+              "operands": [
+                "(ram, 0x101134, 1)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic-block",
+          "id": "0010112f",
+          "preds": [
+            "00101119"
+          ],
+          "succs": [
+            "00101134"
+          ],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(register, 0x0, 8)",
+              "operands": [
+                "(const, 0x2, 8)"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "basic-block",
+          "id": "00101134",
+          "preds": [
+            "00101128",
+            "0010112f"
+          ],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 60,
+              "result": "(register, 0x0, 8)",
+              "operands": [
+                "(register, 0x0, 8)",
+                "(register, 0x0, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)",
+                "(register, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)",
+        "(const, 0x1, 8)",
+        "(const, 0x2, 8)",
+        "(ram, 0x10112f, 1)",
+        "(ram, 0x101134, 1)",
+        "(register, 0x0, 8)",
+        "(register, 0x38, 1)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "00101136",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x101119, 8)",
+                "(const, 0x1, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 7,
+              "operands": [
+                "(ram, 0x101119, 8)",
+                "(const, 0x0, 1)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 1,
+              "result": "(register, 0x0, 8)",
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            },
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)",
+                "(register, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 1)",
+        "(const, 0x0, 8)",
+        "(const, 0x1, 1)",
+        "(ram, 0x101119, 8)",
+        "(register, 0x0, 8)"
+      ]
+    },
+    {
+      "type": "function",
+      "basic-blocks": [
+        {
+          "type": "basic-block",
+          "id": "0010115c",
+          "preds": [],
+          "succs": [],
+          "instructions": [
+            {
+              "type": "instruction",
+              "operation": 10,
+              "operands": [
+                "(const, 0x0, 8)"
+              ]
+            }
+          ]
+        }
+      ],
+      "variables": [
+        "(const, 0x0, 8)"
+      ]
+    }
+  ]
 }

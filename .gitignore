@@ -23,9 +23,6 @@ makefile
 # C++ compiled libraries
 lib/
 
-# Visual Studio Code specific files
-.vscode/
-
 # C++ generated files
 *.sdf
 *.suo

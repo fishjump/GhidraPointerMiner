@@ -1,4 +1,4 @@
-package ghidra_scripts.utils;
+package utils;
 
 import java.util.HashMap;
 import java.util.Map;

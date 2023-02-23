@@ -1,6 +1,49 @@
 # macOS cache
 .DS_Store
 
+# C++ compiled object files
+*.o
+*.obj
+
+# C++ compiled dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# C++ compiled executables
+*.exe
+
+# C++ generated Makefiles
+Makefile
+makefile
+
+# C++ compiled libraries
+lib/
+
+# Visual Studio Code specific files
+.vscode/
+
+# C++ generated files
+*.sdf
+*.suo
+*.ncb
+*.sln
+*.vcproj
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.opensdf
+*.user
+
+# Clion specific files
+.cmake/
+cmake-build-debug/
+
+# Miscellaneous
+*.DS_Store
+*.log
+Thumbs.db
+
 # Compiled example binaries
 example/main
 

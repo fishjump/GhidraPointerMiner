@@ -20,12 +20,13 @@ include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 
 # Add Boost library
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-link_libraries(${Boost_LIBRARIES})
+find_package(Boost COMPONENTS json REQUIRED)
 
 # Set output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Create executable
-add_executable(pointer-solver ${SOURCES})
+add_executable(pointer-solver)
+target_include_directories(pointer-solver PRIVATE ${Boost_INCLUDE_DIRS})
+target_sources(pointer-solver PRIVATE ${SOURCES})
+target_link_libraries(pointer-solver PRIVATE ${Boost_LIBRARIES})

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 # Set project name and version
 project(pointer-solver VERSION 1.0.0)
 
+include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 

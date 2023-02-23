@@ -1,5 +1,4 @@
 #include <boost/assert.hpp>
-#include <boost/format.hpp>
 #include <boost/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -11,8 +10,7 @@ namespace {
 
 std::string read(const std::string &path) {
   std::ifstream file(path);
-  BOOST_ASSERT_MSG(
-      file, (boost::format("failed to read file: %1%") % path).str().c_str());
+  BOOST_ASSERT_MSG(file, "failed to read file");
 
   std::stringstream ss;
   ss << file.rdbuf();
@@ -28,6 +26,7 @@ int main() {
   BOOST_ASSERT_MSG(json_obj.is_object(),
                    "input json file must be a json object");
 
-  std::cout << json_str << "\n";
+  pointer_solver::Program prog(json_obj.as_object());
+
   return 0;
 }

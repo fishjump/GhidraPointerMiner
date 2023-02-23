@@ -75,6 +75,9 @@
         "algorithm": "cpp",
         "__tree": "cpp",
         "set": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "typeindex": "cpp",
+        "list": "cpp",
+        "map": "cpp"
     }
 }

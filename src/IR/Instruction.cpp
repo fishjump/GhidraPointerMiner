@@ -2,9 +2,13 @@
 
 #include <boost/assert.hpp>
 
+#include "Function.hpp"
+
 using namespace pointer_solver;
 
-Instruction::Instruction(const boost::json::object &json_obj) {
+Instruction::Instruction(const Function *func,
+                         const boost::json::object &json_obj)
+    : func_(func) {
   BOOST_ASSERT_MSG(json_obj.contains("type"), "expect 'type' field");
   BOOST_ASSERT_MSG(json_obj.contains("operation"), "expect 'operation' field");
   BOOST_ASSERT_MSG(json_obj.contains("operands"), "expect 'operands' field");
@@ -28,8 +32,12 @@ Instruction::Instruction(const boost::json::object &json_obj) {
   }
 }
 
+const Function *Instruction::getFunction() const { return func_; }
+
 const std::string &Instruction::getType() const { return type_; }
+
 const std::string &Instruction::getOp() const { return op_; }
+
 const std::vector<std::string> &Instruction::getOperands() const {
   return operands_;
 }

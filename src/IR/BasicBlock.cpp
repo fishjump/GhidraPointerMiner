@@ -29,8 +29,8 @@ BasicBlock::BasicBlock(const Function *func,
   BOOST_ASSERT_MSG(instructions.is_array(),
                    "expect array for 'instructions' field");
 
-  BOOST_ASSERT_MSG(type.as_string() == "basic-blocks",
-                   "expect value 'basic-blocks' in 'type' field");
+  BOOST_ASSERT_MSG(type.as_string() == "basic-block",
+                   "expect value 'basic-block' in 'type' field");
 
   id_ = id.as_string();
 
@@ -49,13 +49,14 @@ BasicBlock::BasicBlock(const Function *func,
   for (const auto &inst : instructions.as_array()) {
     BOOST_ASSERT_MSG(inst.is_object(),
                      "expect object for elements of array 'instructions'");
-    instructions_.emplace_back(std::make_shared<Instruction>(inst.as_object()));
+    instructions_.emplace_back(
+        std::make_shared<Instruction>(func_, inst.as_object()));
   }
 }
 
-const std::string &BasicBlock::getId() { return id_; }
+const std::string &BasicBlock::getId() const { return id_; }
 
-const Function *BasicBlock::getParent() { return func_; }
+const Function *BasicBlock::getFunction() const { return func_; }
 
 BasicBlock::InstructionContainerType::iterator BasicBlock::begin() {
   return instructions_.begin();

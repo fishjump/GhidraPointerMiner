@@ -23,8 +23,8 @@ class BasicBlock {
 public:
   BasicBlock(const Function *func, const boost::json::object &json_obj);
 
-  const std::string &getId();
-  const Function *getParent();
+  const std::string &getId() const;
+  const Function *getFunction() const;
 
   InstructionContainerType::iterator begin();
   InstructionContainerType::iterator end();

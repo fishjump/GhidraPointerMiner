@@ -45,7 +45,7 @@ public class Controlflow {
         return basicBlockContexts;
     }
 
-    public String genDot() {
+    public String generateDotGraph() {
         final var sb = new StringBuilder();
 
         sb.append(String.format("digraph %s {\n", highFunction.getFunction().getName()));

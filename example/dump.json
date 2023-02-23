@@ -3,6 +3,7 @@
   "functions": [
     {
       "type": "function",
+      "name": "_init",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -12,16 +13,14 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 7,
-              "result": "(register, 0x0, 4)",
+              "operation": "CALL",
               "operands": [
                 "(ram, 0x105018, 8)"
               ]
             },
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(register, 0x0, 4)",
+              "operation": "COPY",
               "operands": [
                 "(register, 0x0, 4)"
               ]
@@ -45,6 +44,7 @@
     },
     {
       "type": "function",
+      "name": "_start",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -56,8 +56,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 66,
-              "result": "(register, 0x20, 8)",
+              "operation": "PTRSUB",
               "operands": [
                 "(register, 0x20, 8)",
                 "(const, 0x8, 8)"
@@ -65,8 +64,7 @@
             },
             {
               "type": "instruction",
-              "operation": 66,
-              "result": "(register, 0x20, 8)",
+              "operation": "PTRSUB",
               "operands": [
                 "(register, 0x20, 8)",
                 "(const, 0xfffffffffffffff8, 8)"
@@ -74,8 +72,7 @@
             },
             {
               "type": "instruction",
-              "operation": 66,
-              "result": "(unique, 0x10000031, 8)",
+              "operation": "PTRSUB",
               "operands": [
                 "(const, 0x0, 8)",
                 "(const, 0x101136, 8)"
@@ -133,6 +130,7 @@
     },
     {
       "type": "function",
+      "name": "FUN_00101050",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -156,6 +154,7 @@
     },
     {
       "type": "function",
+      "name": "FUN_00101080",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -179,6 +178,7 @@
     },
     {
       "type": "function",
+      "name": "FUN_001010c0",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -191,8 +191,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 12,
-              "result": "(register, 0x206, 1)",
+              "operation": "INT_NOTEQUAL",
               "operands": [
                 "(ram, 0x104010, 1)",
                 "(const, 0x0, 1)"
@@ -218,8 +217,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 66,
-              "result": "(unique, 0x10000035, 8)",
+              "operation": "PTRSUB",
               "operands": [
                 "(const, 0x0, 8)",
                 "(const, 0x104008, 8)"
@@ -227,8 +225,7 @@
             },
             {
               "type": "instruction",
-              "operation": 61,
-              "result": "(ram, 0x104010, 1)",
+              "operation": "INDIRECT",
               "operands": [
                 "(ram, 0x104010, 1)",
                 "(const, 0x1d, 4)"
@@ -244,8 +241,7 @@
             },
             {
               "type": "instruction",
-              "operation": 61,
-              "result": "(ram, 0x104010, 1)",
+              "operation": "INDIRECT",
               "operands": [
                 "(ram, 0x104010, 1)",
                 "(const, 0x20, 4)"
@@ -260,16 +256,14 @@
             },
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(ram, 0x104010, 1)",
+              "operation": "COPY",
               "operands": [
                 "(const, 0x1, 1)"
               ]
             },
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(ram, 0x104010, 1)",
+              "operation": "COPY",
               "operands": [
                 "(ram, 0x104010, 1)"
               ]
@@ -293,8 +287,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(ram, 0x104010, 1)",
+              "operation": "COPY",
               "operands": [
                 "(ram, 0x104010, 1)"
               ]
@@ -326,6 +319,7 @@
     },
     {
       "type": "function",
+      "name": "thunk_FUN_00101080",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -357,6 +351,7 @@
     },
     {
       "type": "function",
+      "name": "foo",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -389,8 +384,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(register, 0x0, 8)",
+              "operation": "COPY",
               "operands": [
                 "(const, 0x1, 8)"
               ]
@@ -416,8 +410,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(register, 0x0, 8)",
+              "operation": "COPY",
               "operands": [
                 "(const, 0x2, 8)"
               ]
@@ -435,8 +428,7 @@
           "instructions": [
             {
               "type": "instruction",
-              "operation": 60,
-              "result": "(register, 0x0, 8)",
+              "operation": "MULTIEQUAL",
               "operands": [
                 "(register, 0x0, 8)",
                 "(register, 0x0, 8)"
@@ -465,6 +457,7 @@
     },
     {
       "type": "function",
+      "name": "main",
       "basic-blocks": [
         {
           "type": "basic-block",
@@ -490,8 +483,7 @@
             },
             {
               "type": "instruction",
-              "operation": 1,
-              "result": "(register, 0x0, 8)",
+              "operation": "COPY",
               "operands": [
                 "(const, 0x0, 8)"
               ]
@@ -517,6 +509,7 @@
     },
     {
       "type": "function",
+      "name": "_fini",
       "basic-blocks": [
         {
           "type": "basic-block",

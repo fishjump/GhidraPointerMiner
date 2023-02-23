@@ -12,10 +12,12 @@ import ghidra.program.model.pcode.PcodeBlockBasic;
 
 public class FunctionDumper {
 
+    private final HighFunction highFunction;
     private final Controlflow controlflow;
     private Map<PcodeBlockBasicWrapper, BasicBlockContext> basicBlockContexts;
 
     public FunctionDumper(final HighFunction highFunction) {
+        this.highFunction = highFunction;
         this.controlflow = new Controlflow(highFunction);
     }
 
@@ -24,7 +26,7 @@ public class FunctionDumper {
 
         final var jsonObject = new JsonObject();
         jsonObject.addProperty("type", "function");
-
+        jsonObject.addProperty("name", highFunction.getFunction().getName());
         final var basicBlockArray = new JsonArray();
         for (final var entry : basicBlockContexts.entrySet()) {
             if (!(entry.getKey().unwrap() instanceof PcodeBlockBasic)) {

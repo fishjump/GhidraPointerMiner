@@ -8,6 +8,8 @@
 
 #include "_typ_dcl.hpp"
 
+#include "Function.hpp"
+
 namespace pointer_solver {
 
 class Instruction {

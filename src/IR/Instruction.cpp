@@ -2,8 +2,6 @@
 
 #include <boost/assert.hpp>
 
-#include "Function.hpp"
-
 using namespace pointer_solver;
 
 Instruction::Instruction(const Function *func,

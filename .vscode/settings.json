@@ -78,6 +78,7 @@
         "filesystem": "cpp",
         "typeindex": "cpp",
         "list": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "functional": "cpp"
     }
 }

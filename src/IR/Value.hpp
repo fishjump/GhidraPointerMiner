@@ -4,6 +4,8 @@
 
 #include <boost/json.hpp>
 
+#include "_typ_dcl.hpp"
+
 namespace pointer_solver {
 
 enum ValueType { CONST, RAM, REGISTER, STACK, UNIQUE };
@@ -23,7 +25,9 @@ public:
 
   const std::string str() const;
 
-  bool operator==(const Value &rhs);
+  bool operator==(const Value &rhs) const;
+
+  bool operator<(const Value &rhs) const;
 };
 
 } // namespace pointer_solver

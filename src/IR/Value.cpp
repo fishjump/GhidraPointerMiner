@@ -56,6 +56,10 @@ Value::Value(const boost::json::string &name) : name_(name) {
 
 const std::string &Value::getName() const { return name_; }
 
-bool Value::operator==(const Value &rhs) {
+bool Value::operator==(const Value &rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_;
+}
+
+bool Value::operator<(const Value &rhs) const {
+  return this->type_ < rhs.type_ && this->id_ < rhs.id_;
 }

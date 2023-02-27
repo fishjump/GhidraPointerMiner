@@ -2,9 +2,6 @@
 
 #include <boost/assert.hpp>
 
-#include "BasicBlock.hpp"
-#include "Value.hpp"
-
 using namespace pointer_solver;
 
 Function::Function(const boost::json::object &json_obj) {
@@ -33,14 +30,19 @@ Function::Function(const boost::json::object &json_obj) {
     BOOST_ASSERT_MSG(block.is_object(),
                      "expect object for elements of array 'basic-blocks'");
 
-    blocks_.emplace_back(std::make_shared<BasicBlock>(this, block.as_object()));
+    blocks_.emplace(BasicBlock::parseId(block.as_object()),
+                    BasicBlock(this, block.as_object()));
   }
 
   for (const auto &var : variables.as_array()) {
     BOOST_ASSERT_MSG(var.is_string(),
                      "expect string for elements of array 'variables'");
 
-    variables_.emplace(std::make_shared<Value>(var.as_string()));
+    variables_.emplace(var.as_string());
+  }
+
+  for (auto &[_, block] : blocks_) {
+    block.buildControlflow();
   }
 }
 
@@ -50,6 +52,24 @@ Function::BasicBlockContainerType::iterator Function::begin() {
   return blocks_.begin();
 }
 
+Function::BasicBlockContainerType::const_iterator Function::cbegin() const {
+  return blocks_.cbegin();
+}
+
 Function::BasicBlockContainerType::iterator Function::end() {
   return blocks_.end();
+}
+
+Function::BasicBlockContainerType::const_iterator Function::cend() const {
+  return blocks_.cend();
+}
+
+Function::BasicBlockContainerType::iterator
+Function::find(const std::string &key) {
+  return blocks_.find(key);
+}
+
+Function::BasicBlockContainerType::const_iterator
+Function::find(const std::string &key) const {
+  return blocks_.find(key);
 }

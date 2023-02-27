@@ -2,13 +2,11 @@
 
 #include <boost/assert.hpp>
 
-#include "Instruction.hpp"
-
 using namespace pointer_solver;
 
-BasicBlock::BasicBlock(const Function *func,
-                       const boost::json::object &json_obj)
-    : func_(func) {
+namespace {
+
+void sanity_guard(const boost::json::object &json_obj) {
   BOOST_ASSERT_MSG(json_obj.contains("type"), "expect 'type' field");
   BOOST_ASSERT_MSG(json_obj.contains("id"), "expect 'id' field");
   BOOST_ASSERT_MSG(json_obj.contains("preds"), "expect 'preds' field");
@@ -20,38 +18,77 @@ BasicBlock::BasicBlock(const Function *func,
   auto id = json_obj.at("id");
   auto preds = json_obj.at("preds");
   auto succs = json_obj.at("succs");
-  auto instructions = json_obj.at("instructions");
+  auto insts = json_obj.at("instructions");
 
   BOOST_ASSERT_MSG(type.is_string(), "expect string for 'type' field");
   BOOST_ASSERT_MSG(id.is_string(), "expect string for 'id' field");
   BOOST_ASSERT_MSG(preds.is_array(), "expect array for 'preds' field");
   BOOST_ASSERT_MSG(succs.is_array(), "expect array for 'succs' field");
-  BOOST_ASSERT_MSG(instructions.is_array(),
-                   "expect array for 'instructions' field");
-
-  BOOST_ASSERT_MSG(type.as_string() == "basic-block",
-                   "expect value 'basic-block' in 'type' field");
-
-  id_ = id.as_string();
+  BOOST_ASSERT_MSG(insts.is_array(), "expect array for 'instructions' field");
 
   for (const auto &pred : preds.as_array()) {
     BOOST_ASSERT_MSG(pred.is_string(),
                      "expect string for elements of array 'preds'");
-    preds_.emplace(pred.as_string());
   }
 
   for (const auto &succ : succs.as_array()) {
     BOOST_ASSERT_MSG(succ.is_string(),
                      "expect string for elements of array 'succs'");
-    succs_.emplace(succ.as_string());
   }
 
-  for (const auto &inst : instructions.as_array()) {
+  for (const auto &inst : insts.as_array()) {
     BOOST_ASSERT_MSG(inst.is_object(),
                      "expect object for elements of array 'instructions'");
+  }
+}
+
+} // namespace
+
+std::string BasicBlock::parseId(const boost::json::object &json_obj) {
+  sanity_guard(json_obj);
+
+  return std::string(json_obj.at("id").as_string());
+}
+
+BasicBlock::BasicBlock(const Function *func,
+                       const boost::json::object &json_obj)
+    : meta_(json_obj), func_(func), isControlflowBuilt_(false) {
+  sanity_guard(meta_);
+
+  id_ = meta_.at("id").as_string();
+}
+
+void BasicBlock::buildControlflow() {
+  if (isControlflowBuilt_) {
+    return;
+  }
+
+  auto preds = meta_.at("preds");
+  auto succs = meta_.at("succs");
+  auto insts = meta_.at("instructions");
+
+  for (const auto &pred : preds.as_array()) {
+    auto it = func_->find(std::string(pred.as_string()));
+    BOOST_ASSERT_MSG(it != func_->cend(),
+                     "a predsuccsor doesn't exit in this function");
+
+    preds_.emplace(&it->second);
+  }
+
+  for (const auto &succ : succs.as_array()) {
+    auto it = func_->find(std::string(succ.as_string()));
+    BOOST_ASSERT_MSG(it != func_->cend(),
+                     "a successor doesn't exit in this function");
+
+    preds_.emplace(&it->second);
+  }
+
+  for (const auto &inst : insts.as_array()) {
     instructions_.emplace_back(
         std::make_shared<Instruction>(func_, inst.as_object()));
   }
+
+  isControlflowBuilt_ = true;
 }
 
 const std::string &BasicBlock::getId() const { return id_; }
@@ -65,5 +102,25 @@ BasicBlock::InstructionContainerType::iterator BasicBlock::end() {
   return instructions_.end();
 }
 
-const std::set<std::string> &BasicBlock::getPredecessors() { return preds_; }
-const std::set<std::string> &BasicBlock::getSuccessors() { return succs_; }
+const std::set<const BasicBlock *> &BasicBlock::getPredecessors() {
+  return preds_;
+}
+const std::set<const BasicBlock *> &BasicBlock::getSuccessors() {
+  return succs_;
+}
+
+bool BasicBlock::operator==(const BasicBlock &rhs) const {
+  return this->id_ == rhs.id_;
+}
+
+bool BasicBlock::operator<(const BasicBlock &rhs) const {
+  return this->id_ < rhs.id_;
+}
+
+bool BasicBlock::operator==(const std::string &rhs) const {
+  return this->id_ == rhs;
+}
+
+bool BasicBlock::operator<(const std::string &rhs) const {
+  return this->id_ < rhs;
+}

@@ -2,8 +2,6 @@
 
 #include <boost/assert.hpp>
 
-#include "Function.hpp"
-
 using namespace pointer_solver;
 
 Program::Program(const boost::json::object &json_obj) {

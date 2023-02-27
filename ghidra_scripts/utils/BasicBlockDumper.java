@@ -14,11 +14,20 @@ public class BasicBlockDumper {
 
     private final PcodeBlockBasic pcodeBlockBasic;
     private final BasicBlockContext basicBlockContext;
+    private final IDGenerator idGenerator;
     private ArrayList<PcodeOp> instructions;
 
-    public BasicBlockDumper(final PcodeBlockBasic pcodeBlockBasic, final BasicBlockContext basicBlockContext) {
+    public BasicBlockDumper(final PcodeBlockBasic pcodeBlockBasic, final BasicBlockContext basicBlockContext,
+            final IDGenerator idGenerator) {
         this.pcodeBlockBasic = pcodeBlockBasic;
         this.basicBlockContext = basicBlockContext;
+        this.idGenerator = idGenerator;
+    }
+
+    public BasicBlockDumper(PcodeBlockBasic pcodeBlockBasic, BasicBlockContext basicBlockContext) {
+        this.pcodeBlockBasic = pcodeBlockBasic;
+        this.basicBlockContext = basicBlockContext;
+        this.idGenerator = null;
     }
 
     public JsonObject toJson() {
@@ -42,7 +51,7 @@ public class BasicBlockDumper {
 
         final var instructionsArray = new JsonArray();
         for (final var instruction : instructions) {
-            final var instructionDumper = new InstructionDumper(instruction);
+            final var instructionDumper = new InstructionDumper(instruction, idGenerator);
             instructionsArray.add(instructionDumper.toJson());
         }
         jsonObject.add("instructions", instructionsArray);

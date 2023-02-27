@@ -27,13 +27,14 @@ public class FunctionDumper {
         final var jsonObject = new JsonObject();
         jsonObject.addProperty("type", "function");
         jsonObject.addProperty("name", highFunction.getFunction().getName());
+        final var idGenerator = new IDGenerator();
         final var basicBlockArray = new JsonArray();
         for (final var entry : basicBlockContexts.entrySet()) {
             if (!(entry.getKey().unwrap() instanceof PcodeBlockBasic)) {
                 continue;
             }
             final var basicBlock = (PcodeBlockBasic) entry.getKey().unwrap();
-            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue());
+            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue(), idGenerator);
             basicBlockArray.add(basicBlockDumper.toJson());
         }
         jsonObject.add("basic-blocks", basicBlockArray);

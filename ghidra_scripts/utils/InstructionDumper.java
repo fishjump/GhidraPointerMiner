@@ -11,23 +11,18 @@ import ghidra.program.model.pcode.PcodeOp;
 public class InstructionDumper {
 
     private final PcodeOp pcodeOp;
-    private final IDGenerator idGenerator;
+    private final int id;
 
     public InstructionDumper(final PcodeOp pcodeOp, final IDGenerator idGenerator) {
         this.pcodeOp = pcodeOp;
-        this.idGenerator = idGenerator;
-    }
-
-    public InstructionDumper(final PcodeOp pcodeOp) {
-        this.pcodeOp = pcodeOp;
-        this.idGenerator = new IDGenerator();
+        this.id = idGenerator.next();
     }
 
     public JsonObject toJson() {
         final var jsonObject = new JsonObject();
         final var jsonArray = new JsonArray();
 
-        jsonObject.addProperty("id", idGenerator.next());
+        jsonObject.addProperty("id", id);
 
         jsonObject.addProperty("type", "instruction");
 
@@ -45,6 +40,10 @@ public class InstructionDumper {
         jsonObject.add("operands", jsonArray);
 
         return jsonObject;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public Set<VarnodeWrapper> getVarnodeWrappers() {

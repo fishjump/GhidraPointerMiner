@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -8,34 +10,34 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import ghidra.program.model.pcode.HighFunction;
-import ghidra.program.model.pcode.PcodeBlockBasic;
 
 public class FunctionDumper {
 
     private final HighFunction highFunction;
-    private final Controlflow controlflow;
-    private Map<PcodeBlockBasicWrapper, BasicBlockContext> basicBlockContexts;
+    private final Map<PcodeBlockBasicWrapper, BasicBlockContext> basicBlockContexts;
+    private final List<BasicBlockDumper> dumpers;
+    private final IDGenerator idGenerator;
 
     public FunctionDumper(final HighFunction highFunction) {
         this.highFunction = highFunction;
-        this.controlflow = new Controlflow(highFunction);
+        this.basicBlockContexts = new Controlflow(highFunction).getBasicBlockContexts();
+        this.dumpers = new ArrayList<>();
+        this.idGenerator = new IDGenerator();
+
+        for (final var entry : basicBlockContexts.entrySet()) {
+            final var basicBlock = entry.getKey().unwrap();
+            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue(), idGenerator);
+            dumpers.add(basicBlockDumper);
+        }
     }
 
     public JsonObject toJson() {
-        dumpBasicBlockContextsIfNecessary();
-
         final var jsonObject = new JsonObject();
         jsonObject.addProperty("type", "function");
         jsonObject.addProperty("name", highFunction.getFunction().getName());
-        final var idGenerator = new IDGenerator();
         final var basicBlockArray = new JsonArray();
-        for (final var entry : basicBlockContexts.entrySet()) {
-            if (!(entry.getKey().unwrap() instanceof PcodeBlockBasic)) {
-                continue;
-            }
-            final var basicBlock = (PcodeBlockBasic) entry.getKey().unwrap();
-            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue(), idGenerator);
-            basicBlockArray.add(basicBlockDumper.toJson());
+        for (final var dumper : dumpers) {
+            basicBlockArray.add(dumper.toJson());
         }
         jsonObject.add("basic-blocks", basicBlockArray);
 
@@ -45,30 +47,29 @@ public class FunctionDumper {
         }
         jsonObject.add("variables", variableArray);
 
+        final var instArray = new JsonArray();
+        for (final var dumper : getInstructionDumpers()) {
+            instArray.add(dumper.toJson());
+        }
+        jsonObject.add("instructions", instArray);
+
         return jsonObject;
     }
 
-    private void dumpBasicBlockContextsIfNecessary() {
-        if (basicBlockContexts != null) {
-            return;
-        }
-
-        basicBlockContexts = controlflow.getBasicBlockContexts();
-    }
-
     public Set<VarnodeWrapper> getVarnodeWrappers() {
-        dumpBasicBlockContextsIfNecessary();
-
         final var varnodeWrappers = new TreeSet<VarnodeWrapper>();
-        for (final var entry : basicBlockContexts.entrySet()) {
-            if (!(entry.getKey().unwrap() instanceof PcodeBlockBasic)) {
-                continue;
-            }
-            final var basicBlock = (PcodeBlockBasic) entry.getKey().unwrap();
-            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue());
-            varnodeWrappers.addAll(basicBlockDumper.getVarnodeWrappers());
+        for (final var dumper : dumpers) {
+            varnodeWrappers.addAll(dumper.getVarnodeWrappers());
         }
         return varnodeWrappers;
+    }
+
+    public ArrayList<InstructionDumper> getInstructionDumpers() {
+        final var instructionDumpers = new ArrayList<InstructionDumper>();
+        for (final var dumper : dumpers) {
+            instructionDumpers.addAll(dumper.getInstructionDumpers());
+        }
+        return instructionDumpers;
     }
 
 }

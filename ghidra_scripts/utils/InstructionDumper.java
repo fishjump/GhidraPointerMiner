@@ -25,7 +25,7 @@ public class InstructionDumper {
         jsonObject.addProperty("id", id);
 
         jsonObject.addProperty("type", "instruction");
-
+        jsonObject.addProperty("parent", pcodeOp.getParent().getStart().toString());
         jsonObject.addProperty("operation", PcodeOpNames.get(pcodeOp.getOpcode()));
 
         if (pcodeOp.isAssignment()) {

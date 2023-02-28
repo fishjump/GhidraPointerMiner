@@ -73,6 +73,7 @@
         {
           "id": 0,
           "type": "instruction",
+          "parent": "100003f60",
           "operation": "CBRANCH",
           "operands": [
             "(ram, 0x100003f82, 1)",
@@ -82,6 +83,7 @@
         {
           "id": 1,
           "type": "instruction",
+          "parent": "100003f76",
           "operation": "COPY",
           "result": "(stack, 0xfffffffffffffff4, 4)",
           "operands": [
@@ -91,6 +93,7 @@
         {
           "id": 2,
           "type": "instruction",
+          "parent": "100003f76",
           "operation": "BRANCH",
           "operands": [
             "(ram, 0x100003f89, 1)"
@@ -99,6 +102,7 @@
         {
           "id": 3,
           "type": "instruction",
+          "parent": "100003f82",
           "operation": "COPY",
           "result": "(stack, 0xfffffffffffffff4, 4)",
           "operands": [
@@ -108,6 +112,7 @@
         {
           "id": 4,
           "type": "instruction",
+          "parent": "100003f89",
           "operation": "MULTIEQUAL",
           "result": "(stack, 0xfffffffffffffff4, 4)",
           "operands": [
@@ -118,6 +123,7 @@
         {
           "id": 5,
           "type": "instruction",
+          "parent": "100003f89",
           "operation": "COPY",
           "result": "(register, 0x0, 4)",
           "operands": [
@@ -127,6 +133,7 @@
         {
           "id": 6,
           "type": "instruction",
+          "parent": "100003f89",
           "operation": "RETURN",
           "operands": [
             "(const, 0x0, 8)",
@@ -163,6 +170,7 @@
         {
           "id": 0,
           "type": "instruction",
+          "parent": "100003f90",
           "operation": "CALL",
           "operands": [
             "(ram, 0x100003f60, 8)",
@@ -172,6 +180,7 @@
         {
           "id": 1,
           "type": "instruction",
+          "parent": "100003f90",
           "operation": "CALL",
           "operands": [
             "(ram, 0x100003f60, 8)",
@@ -181,6 +190,7 @@
         {
           "id": 2,
           "type": "instruction",
+          "parent": "100003f90",
           "operation": "COPY",
           "result": "(register, 0x0, 8)",
           "operands": [
@@ -190,6 +200,7 @@
         {
           "id": 3,
           "type": "instruction",
+          "parent": "100003f90",
           "operation": "RETURN",
           "operands": [
             "(const, 0x0, 8)",

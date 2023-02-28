@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -15,24 +16,29 @@ public class BasicBlockDumper {
     private final PcodeBlockBasic pcodeBlockBasic;
     private final BasicBlockContext basicBlockContext;
     private final IDGenerator idGenerator;
-    private ArrayList<PcodeOp> instructions;
+    private final List<PcodeOp> instructions;
+    private final List<InstructionDumper> dumpers;
 
     public BasicBlockDumper(final PcodeBlockBasic pcodeBlockBasic, final BasicBlockContext basicBlockContext,
             final IDGenerator idGenerator) {
         this.pcodeBlockBasic = pcodeBlockBasic;
         this.basicBlockContext = basicBlockContext;
         this.idGenerator = idGenerator;
-    }
 
-    public BasicBlockDumper(PcodeBlockBasic pcodeBlockBasic, BasicBlockContext basicBlockContext) {
-        this.pcodeBlockBasic = pcodeBlockBasic;
-        this.basicBlockContext = basicBlockContext;
-        this.idGenerator = null;
+        this.instructions = new ArrayList<>();
+        final var iterator = pcodeBlockBasic.getIterator();
+        while (iterator.hasNext()) {
+            final var instruction = iterator.next();
+            instructions.add(instruction);
+        }
+
+        this.dumpers = new ArrayList<>();
+        for (final var instruction : instructions) {
+            this.dumpers.add(new InstructionDumper(instruction, this.idGenerator));
+        }
     }
 
     public JsonObject toJson() {
-        dumpInstructionsIfNecessary();
-
         final var jsonObject = new JsonObject();
         jsonObject.addProperty("type", "basic-block");
         jsonObject.addProperty("id", pcodeBlockBasic.getStart().toString());
@@ -50,36 +56,23 @@ public class BasicBlockDumper {
         jsonObject.add("succs", succsArray);
 
         final var instructionsArray = new JsonArray();
-        for (final var instruction : instructions) {
-            final var instructionDumper = new InstructionDumper(instruction, idGenerator);
-            instructionsArray.add(instructionDumper.toJson());
+        for (final var dumper : dumpers) {
+            instructionsArray.add(dumper.getId());
         }
         jsonObject.add("instructions", instructionsArray);
 
         return jsonObject;
     }
 
-    private void dumpInstructionsIfNecessary() {
-        if (instructions != null) {
-            return;
-        }
-
-        instructions = new ArrayList<>();
-        final var iterator = pcodeBlockBasic.getIterator();
-        while (iterator.hasNext()) {
-            final var instruction = iterator.next();
-            instructions.add(instruction);
-        }
-    }
-
     public Set<VarnodeWrapper> getVarnodeWrappers() {
-        dumpInstructionsIfNecessary();
-
         final var varnodeWrappers = new TreeSet<VarnodeWrapper>();
-        for (final var instruction : instructions) {
-            final var instructionDumper = new InstructionDumper(instruction);
-            varnodeWrappers.addAll(instructionDumper.getVarnodeWrappers());
+        for (final var dumper : dumpers) {
+            varnodeWrappers.addAll(dumper.getVarnodeWrappers());
         }
         return varnodeWrappers;
+    }
+
+    public List<InstructionDumper> getInstructionDumpers() {
+        return dumpers;
     }
 }

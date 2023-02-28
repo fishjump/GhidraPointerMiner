@@ -1,6 +1,5 @@
 package utils;
 
-import ghidra.program.model.pcode.PcodeBlock;
 import ghidra.program.model.pcode.PcodeBlockBasic;
 
 public class PcodeBlockBasicWrapper implements Comparable<PcodeBlockBasicWrapper> {
@@ -10,7 +9,7 @@ public class PcodeBlockBasicWrapper implements Comparable<PcodeBlockBasicWrapper
         this.block = block;
     }
 
-    public PcodeBlock unwrap() {
+    public PcodeBlockBasic unwrap() {
         return block;
     }
 

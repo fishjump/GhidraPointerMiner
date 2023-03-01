@@ -1,18 +1,17 @@
 #pragma once
 
+#include "_typ_dcl.hpp"
+
+#include "Function.hpp"
+
 #include <memory>
 #include <vector>
 
 #include <boost/json.hpp>
 
-#include "_typ_dcl.hpp"
-
-#include "Function.hpp"
-
 namespace pointer_solver {
 
 class Program {
-
   using FunctionContainerType = std::vector<const std::shared_ptr<Function>>;
 
   FunctionContainerType funcs_;

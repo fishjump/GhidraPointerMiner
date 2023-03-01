@@ -1,10 +1,10 @@
 #pragma once
 
+#include "_typ_dcl.hpp"
+
 #include <string>
 
 #include <boost/json.hpp>
-
-#include "_typ_dcl.hpp"
 
 namespace pointer_solver {
 
@@ -22,11 +22,10 @@ public:
   Value(const boost::json::string &name);
 
   const std::string &getName() const;
-
-  const std::string str() const;
+  const std::vector<const Instruction *> users() const;
+  const std::vector<const Value *> uses() const;
 
   bool operator==(const Value &rhs) const;
-
   bool operator<(const Value &rhs) const;
 };
 

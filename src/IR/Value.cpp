@@ -1,9 +1,9 @@
 #include "Value.hpp"
 
+#include <sstream>
+
 #include <boost/assert.hpp>
 #include <boost/regex.hpp>
-
-#include <sstream>
 
 using namespace pointer_solver;
 
@@ -55,6 +55,11 @@ Value::Value(const boost::json::string &name) : name_(name) {
 }
 
 const std::string &Value::getName() const { return name_; }
+
+// TODO: impl users and uses
+const std::vector<const Instruction *> Value::users() const { return {}; };
+
+const std::vector<const Value *> Value::uses() const { return {}; };
 
 bool Value::operator==(const Value &rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_;

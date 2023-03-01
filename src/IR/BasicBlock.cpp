@@ -37,7 +37,7 @@ void sanity_guard(const boost::json::object &json_obj) {
   }
 
   for (const auto &inst : insts.as_array()) {
-    BOOST_ASSERT_MSG(inst.is_object(),
+    BOOST_ASSERT_MSG(inst.is_int64(),
                      "expect object for elements of array 'instructions'");
   }
 }
@@ -52,14 +52,14 @@ std::string BasicBlock::parseId(const boost::json::object &json_obj) {
 
 BasicBlock::BasicBlock(const Function *func,
                        const boost::json::object &json_obj)
-    : meta_(json_obj), func_(func), isControlflowBuilt_(false) {
+    : meta_(json_obj), func_(func), is_built_(false) {
   sanity_guard(meta_);
 
   id_ = meta_.at("id").as_string();
 }
 
-void BasicBlock::buildControlflow() {
-  if (isControlflowBuilt_) {
+void BasicBlock::build() {
+  if (is_built_) {
     return;
   }
 
@@ -84,11 +84,11 @@ void BasicBlock::buildControlflow() {
   }
 
   for (const auto &inst : insts.as_array()) {
-    instructions_.emplace_back(
-        std::make_shared<Instruction>(func_, inst.as_object()));
+    auto it = func_->inst_find(inst.as_int64());
+    instructions_.emplace(inst.as_int64(), &it->second);
   }
 
-  isControlflowBuilt_ = true;
+  is_built_ = true;
 }
 
 const std::string &BasicBlock::getId() const { return id_; }
@@ -107,6 +107,11 @@ const std::set<const BasicBlock *> &BasicBlock::getPredecessors() {
 }
 const std::set<const BasicBlock *> &BasicBlock::getSuccessors() {
   return succs_;
+}
+
+const Instruction *BasicBlock::find(size_t id) const {
+  auto it = instructions_.find(id);
+  return it == instructions_.end() ? nullptr : it->second;
 }
 
 bool BasicBlock::operator==(const BasicBlock &rhs) const {

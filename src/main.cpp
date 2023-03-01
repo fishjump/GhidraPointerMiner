@@ -1,10 +1,11 @@
-#include <boost/assert.hpp>
-#include <boost/json.hpp>
+#include "IR/Program.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-#include "IR/Program.hpp"
+#include <boost/assert.hpp>
+#include <boost/json.hpp>
 
 namespace {
 

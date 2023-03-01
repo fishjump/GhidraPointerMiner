@@ -1,0 +1,25 @@
+# Use the LLVM coding style
+BasedOnStyle: LLVM
+
+# Set the indent width and tab width
+IndentWidth: 2
+TabWidth: 2
+
+# Set the include order and grouping rules
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"_.*"$' # local header start with "_"
+    Priority: 0
+  - Regex: '^<.*\.h>$' # 3rd party headers
+    Priority: 3
+  - Regex: '^<.*\.hpp>$' # 3rd party headers
+    Priority: 3
+  - Regex: '^<.*>$' # std headers
+    Priority: 2
+  - Regex: '^".*\.h"$' # local headers
+    Priority: 1
+  - Regex: '^".*\.hpp"$' # local headers
+    Priority: 1
+  - Regex: '^".*"$' # local headers
+    Priority: 1

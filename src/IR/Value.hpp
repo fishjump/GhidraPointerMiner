@@ -19,6 +19,7 @@ class Value {
   size_t size_;
 
 public:
+  Value(const std::string &name);
   Value(const boost::json::string &name);
 
   const std::string &getName() const;

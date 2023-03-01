@@ -39,24 +39,19 @@ size_t Instruction::parseId(const boost::json::object &json_obj) {
   return json_obj.at("id").as_int64();
 }
 
-Instruction::Instruction(const boost::json::object &json_obj)
-    : meta_(json_obj), is_built_(false) {
+Instruction::Instruction(const Function *func,
+                         const boost::json::object &json_obj)
+    : meta_(json_obj), func_(func), is_built_(false) {
   sanity_guard(meta_);
 
   id_ = meta_.at("id").is_int64();
   op_ = meta_.at("operation").as_string();
-
-  for (const auto &operand : meta_.at("operands").as_array()) {
-    operands_.emplace_back(operand.as_string());
-  }
 }
 
-void Instruction::build(const Function *func) {
+void Instruction::build() {
   if (is_built_) {
     return;
   }
-
-  func_ = func;
 
   auto b_it = func_->find(std::string(meta_.at("parent").as_string()));
   BOOST_ASSERT_MSG(b_it != func_->cend(),
@@ -69,6 +64,13 @@ void Instruction::build(const Function *func) {
   auto next_it = func_->inst_find(id_ + 1);
   next_ = next_it == func_->inst_cend() ? nullptr : &next_it->second;
 
+  for (const auto &operand : meta_.at("operands").as_array()) {
+    auto it = func_->var_find(operand.as_string());
+    BOOST_ASSERT_MSG(it != func_->var_cend(),
+                     "reference a variable which does not exist");
+    operands_.emplace_back(&*it);
+  }
+
   is_built_ = true;
 }
 
@@ -80,7 +82,7 @@ const std::string &Instruction::getType() const { return type_; }
 
 const std::string &Instruction::getOp() const { return op_; }
 
-const std::vector<std::string> &Instruction::getOperands() const {
+const std::vector<const Value *> &Instruction::getOperands() const {
   return operands_;
 }
 

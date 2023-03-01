@@ -59,7 +59,7 @@ Function::Function(const boost::json::object &json_obj) {
 
   for (const auto &inst : json_obj.at("instructions").as_array()) {
     insts_.emplace(Instruction::parseId(inst.as_object()),
-                   Instruction(inst.as_object()));
+                   Instruction(this, inst.as_object()));
   }
 
   for (const auto &block : json_obj.at("basic-blocks").as_array()) {
@@ -68,7 +68,7 @@ Function::Function(const boost::json::object &json_obj) {
   }
 
   for (auto &[_, inst] : insts_) {
-    inst.build(this);
+    inst.build();
   }
 
   for (auto &[_, block] : blocks_) {
@@ -128,4 +128,40 @@ Function::InstructionContainerType::iterator Function::inst_find(size_t key) {
 Function::InstructionContainerType::const_iterator
 Function::inst_find(size_t key) const {
   return insts_.find(key);
+}
+
+Function::ValueContainerType::iterator Function::var_begin() {
+  return variables_.begin();
+}
+
+Function::ValueContainerType::const_iterator Function::var_cbegin() const {
+  return variables_.cbegin();
+}
+
+Function::ValueContainerType::iterator Function::var_end() {
+  return variables_.end();
+}
+
+Function::ValueContainerType::const_iterator Function::var_cend() const {
+  return variables_.cend();
+}
+
+Function::ValueContainerType::iterator
+Function::var_find(const std::string &key) {
+  return variables_.find(Value(key));
+}
+
+Function::ValueContainerType::const_iterator
+Function::var_find(const std::string &key) const {
+  return variables_.find(Value(key));
+}
+
+Function::ValueContainerType::iterator
+Function::var_find(const boost::json::string &key) {
+  return var_find(std::string(key));
+}
+
+Function::ValueContainerType::const_iterator
+Function::var_find(const boost::json::string &key) const {
+  return var_find(std::string(key));
 }

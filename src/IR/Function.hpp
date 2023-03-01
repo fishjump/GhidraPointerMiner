@@ -45,6 +45,18 @@ public:
 
   InstructionContainerType::iterator inst_find(size_t key);
   InstructionContainerType::const_iterator inst_find(size_t key) const;
+
+  ValueContainerType::iterator var_begin();
+  ValueContainerType::const_iterator var_cbegin() const;
+
+  ValueContainerType::iterator var_end();
+  ValueContainerType::const_iterator var_cend() const;
+
+  ValueContainerType::iterator var_find(const std::string &key);
+  ValueContainerType::const_iterator var_find(const std::string &key) const;
+  
+  ValueContainerType::iterator var_find(const boost::json::string &key);
+  ValueContainerType::const_iterator var_find(const boost::json::string &key) const;
 };
 
 } // namespace pointer_solver

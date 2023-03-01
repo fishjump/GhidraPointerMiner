@@ -47,12 +47,14 @@ auto parse(const std::string &name) {
 
 } // namespace
 
-Value::Value(const boost::json::string &name) : name_(name) {
+Value::Value(const std::string &name) : name_(name) {
   auto [type, id, size] = parse(name_);
   type_ = type;
   id_ = id;
   size_ = size;
 }
+
+Value::Value(const boost::json::string &name) : Value(std::string(name)) {}
 
 const std::string &Value::getName() const { return name_; }
 

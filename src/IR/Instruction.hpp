@@ -5,6 +5,7 @@
 
 #include "Function.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -14,35 +15,45 @@ namespace pointer_solver {
 
 class Instruction {
   using OperandContainerType = std::vector<const Value *>;
+  using DefMapContainerType = std::map<Value *, std::vector<Instruction *>>;
 
   const boost::json::object meta_;
 
-  const Function *func_;
-  const BasicBlock *block_;
-  const Instruction *prev_;
-  const Instruction *next_;
+  std::string type_;
+  size_t id_;
+  std::string op_;
+
+  Function *func_;
+  BasicBlock *block_;
+
+  std::vector<Instruction *> prev_;
+  std::vector<Instruction *> next_;
+
+  const Value *result_;
   OperandContainerType operands_;
 
-  size_t id_;
-  std::string type_;
-  std::string op_;
+  DefMapContainerType defs_;
 
   bool is_built_;
 
 public:
-  static size_t parseId(const boost::json::object &json_obj);
-
-  Instruction(const Function *func, const boost::json::object &json_obj);
+  Instruction(Function *func, const boost::json::object &json_obj);
 
   void build();
 
-  const Function *getFunction() const;
-  const size_t getId() const;
-  const std::string &getType() const;
-  const std::string &getOp() const;
-  const OperandContainerType &getOperands() const;
-  const Instruction *getPrev() const;
-  const Instruction *getNext() const;
-};
+  const std::string &getType();
+  size_t getId();
+  const std::string &getOp();
 
+  Function *getFunction();
+  BasicBlock *getBlock();
+
+  std::vector<Instruction *> getPrev();
+  std::vector<Instruction *> getNext();
+
+  OperandContainerType &getOperands();
+  const Value *getResult();
+
+  DefMapContainerType &getDefs();
+};
 } // namespace pointer_solver

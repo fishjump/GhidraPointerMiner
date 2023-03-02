@@ -1,6 +1,9 @@
 #include "Function.hpp"
 
+#include <stack>
+
 #include <boost/assert.hpp>
+#include <boost/log/trivial.hpp>
 
 using namespace pointer_solver;
 
@@ -58,13 +61,13 @@ Function::Function(const boost::json::object &json_obj) {
   }
 
   for (const auto &inst : json_obj.at("instructions").as_array()) {
-    insts_.emplace(Instruction::parseId(inst.as_object()),
-                   Instruction(this, inst.as_object()));
+    auto tmp = Instruction(this, inst.as_object());
+    insts_.emplace(tmp.getId(), tmp);
   }
 
   for (const auto &block : json_obj.at("basic-blocks").as_array()) {
-    blocks_.emplace(BasicBlock::parseId(block.as_object()),
-                    BasicBlock(this, block.as_object()));
+    auto tmp = BasicBlock(this, block.as_object());
+    blocks_.emplace(tmp.getId(), tmp);
   }
 
   for (auto &[_, inst] : insts_) {
@@ -77,6 +80,42 @@ Function::Function(const boost::json::object &json_obj) {
 }
 
 const std::string &Function::getName() { return name_; }
+
+void Function::ud_chain(Instruction *inst) {
+  // TODO: implement this function
+  // // init visited set for blocks
+  // std::set<const BasicBlock *> visited;
+
+  // std::map</* use: */ const Value *,
+  //          std::map<Instruction *, std::vector<Instruction *>>>
+  //     trace_tbl;
+  // for (auto &var : variables_) {
+  //   trace_tbl.emplace(&var,
+  //                     std::map<Instruction *, std::vector<Instruction *>>());
+  // }
+
+  // // add all blocks into the worklist
+  // std::vector<BasicBlock *> worklist;
+
+  // // DFS
+  // while (!worklist.empty()) {
+  //   auto *block = worklist.back();
+  //   worklist.pop_back();
+
+  //   if (visited.find(block) != visited.end()) {
+  //     continue;
+  //   }
+  //   visited.emplace(block);
+
+  //   auto &insts = block->getInsts();
+  //   for (auto it = insts.rbegin(); it != insts.rend(); it++) {
+  //     auto &inst = it->second;
+  //     for (auto &operand : inst->getOperands()) {
+  //       trace_tbl[operand];
+  //     }
+  //   }
+  // }
+}
 
 Function::BasicBlockContainerType::iterator Function::begin() {
   return blocks_.begin();

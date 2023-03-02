@@ -8,6 +8,7 @@
 using namespace pointer_solver;
 
 namespace {
+
 constexpr char RE_STR[] =
     R"(\( *?(.*?) *?, *?(0[xX][0-9a-fA-F]+|[0-9]+) *?, *?(0[xX][0-9a-fA-F]+|[0-9]+) *?\))";
 const boost::regex pattern(RE_STR);
@@ -47,21 +48,20 @@ auto parse(const std::string &name) {
 
 } // namespace
 
-Value::Value(const std::string &name) : name_(name) {
-  auto [type, id, size] = parse(name_);
+Value::Value(const std::string &meta) : meta_(meta) {
+  const auto [type, id, size] = parse(meta_);
   type_ = type;
   id_ = id;
   size_ = size;
 }
 
-Value::Value(const boost::json::string &name) : Value(std::string(name)) {}
+Value::Value(const boost::json::string &meta) : Value(std::string(meta)) {}
 
-const std::string &Value::getName() const { return name_; }
+const std::string &Value::getType() const { return type_; }
 
-// TODO: impl users and uses
-const std::vector<const Instruction *> Value::users() const { return {}; };
+size_t Value::getId() const { return id_; }
 
-const std::vector<const Value *> Value::uses() const { return {}; };
+size_t Value::getSize() const { return size_; }
 
 bool Value::operator==(const Value &rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_;

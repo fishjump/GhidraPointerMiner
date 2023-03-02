@@ -28,6 +28,8 @@ public:
 
   const std::string &getName();
 
+  void ud_chain(Instruction *inst);
+
   BasicBlockContainerType::iterator begin();
   BasicBlockContainerType::const_iterator cbegin() const;
 
@@ -54,9 +56,10 @@ public:
 
   ValueContainerType::iterator var_find(const std::string &key);
   ValueContainerType::const_iterator var_find(const std::string &key) const;
-  
+
   ValueContainerType::iterator var_find(const boost::json::string &key);
-  ValueContainerType::const_iterator var_find(const boost::json::string &key) const;
+  ValueContainerType::const_iterator
+  var_find(const boost::json::string &key) const;
 };
 
 } // namespace pointer_solver

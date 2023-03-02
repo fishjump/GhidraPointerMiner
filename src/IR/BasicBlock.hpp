@@ -13,14 +13,15 @@
 namespace pointer_solver {
 
 class BasicBlock {
-  using InstructionContainerType = std::map<size_t, const Instruction *>;
-  using BasicBlockContainerType = std::set<const BasicBlock *>;
+  using InstructionContainerType = std::map<size_t, Instruction *>;
+  using BasicBlockContainerType = std::set<BasicBlock *>;
 
   const boost::json::object meta_;
 
+  Function *func_;
+
   std::string id_;
 
-  const Function *func_;
   BasicBlockContainerType preds_;
   BasicBlockContainerType succs_;
 
@@ -31,7 +32,7 @@ class BasicBlock {
 public:
   static std::string parseId(const boost::json::object &json_obj);
 
-  BasicBlock(const Function *func, const boost::json::object &json_obj);
+  BasicBlock(Function *func, const boost::json::object &json_obj);
 
   void build();
 
@@ -40,10 +41,13 @@ public:
 
   InstructionContainerType::iterator begin();
   InstructionContainerType::iterator end();
+
+  InstructionContainerType &getInsts();
+
   const Instruction *find(size_t id) const;
 
-  const BasicBlockContainerType &getPredecessors();
-  const BasicBlockContainerType &getSuccessors();
+  BasicBlockContainerType &getPredecessors();
+  BasicBlockContainerType &getSuccessors();
 
   bool operator==(const BasicBlock &rhs) const;
   bool operator==(const std::string &rhs) const;

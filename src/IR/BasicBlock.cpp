@@ -50,8 +50,7 @@ std::string BasicBlock::parseId(const boost::json::object &json_obj) {
   return std::string(json_obj.at("id").as_string());
 }
 
-BasicBlock::BasicBlock(const Function *func,
-                       const boost::json::object &json_obj)
+BasicBlock::BasicBlock(Function *func, const boost::json::object &json_obj)
     : meta_(json_obj), func_(func), is_built_(false) {
   sanity_guard(meta_);
 
@@ -102,10 +101,14 @@ BasicBlock::InstructionContainerType::iterator BasicBlock::end() {
   return instructions_.end();
 }
 
-const std::set<const BasicBlock *> &BasicBlock::getPredecessors() {
+BasicBlock::InstructionContainerType &BasicBlock::getInsts() {
+  return instructions_;
+}
+
+BasicBlock::BasicBlockContainerType &BasicBlock::getPredecessors() {
   return preds_;
 }
-const std::set<const BasicBlock *> &BasicBlock::getSuccessors() {
+BasicBlock::BasicBlockContainerType &BasicBlock::getSuccessors() {
   return succs_;
 }
 

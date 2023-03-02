@@ -2,6 +2,7 @@
 
 #include "_typ_dcl.hpp"
 
+#include <memory>
 #include <string>
 
 #include <boost/json.hpp>
@@ -11,7 +12,7 @@ namespace pointer_solver {
 enum ValueType { CONST, RAM, REGISTER, STACK, UNIQUE };
 
 class Value {
-  std::string name_;
+  const std::string meta_;
   // TODO: implement string to ValueType conversion
   // ValueType type_;
   std::string type_;
@@ -19,12 +20,12 @@ class Value {
   size_t size_;
 
 public:
-  Value(const std::string &name);
-  Value(const boost::json::string &name);
+  Value(const std::string &meta);
+  Value(const boost::json::string &meta);
 
-  const std::string &getName() const;
-  const std::vector<const Instruction *> users() const;
-  const std::vector<const Value *> uses() const;
+  const std::string &getType() const;
+  size_t getId() const;
+  size_t getSize() const;
 
   bool operator==(const Value &rhs) const;
   bool operator<(const Value &rhs) const;

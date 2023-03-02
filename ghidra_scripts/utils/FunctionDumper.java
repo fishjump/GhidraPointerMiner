@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
@@ -16,18 +17,25 @@ public class FunctionDumper {
     private final HighFunction highFunction;
     private final Map<PcodeBlockBasicWrapper, BasicBlockContext> basicBlockContexts;
     private final List<BasicBlockDumper> dumpers;
+    private final Map<String, BasicBlockDumper> IdDumperMap;
+
     private final IDGenerator idGenerator;
 
     public FunctionDumper(final HighFunction highFunction) {
         this.highFunction = highFunction;
         this.basicBlockContexts = new Controlflow(highFunction).getBasicBlockContexts();
-        this.dumpers = new ArrayList<>();
         this.idGenerator = new IDGenerator();
 
+        this.dumpers = new ArrayList<>();
         for (final var entry : basicBlockContexts.entrySet()) {
             final var basicBlock = entry.getKey().unwrap();
-            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue(), idGenerator);
+            final var basicBlockDumper = new BasicBlockDumper(basicBlock, entry.getValue(), this);
             dumpers.add(basicBlockDumper);
+        }
+
+        this.IdDumperMap = new TreeMap<>();
+        for (final var dumper : dumpers) {
+            this.IdDumperMap.put(dumper.getId(), dumper);
         }
     }
 
@@ -72,4 +80,11 @@ public class FunctionDumper {
         return instructionDumpers;
     }
 
+    public IDGenerator getIdGenerator() {
+        return idGenerator;
+    }
+
+    public Map<String, BasicBlockDumper> getIdDumperMap() {
+        return IdDumperMap;
+    }
 }

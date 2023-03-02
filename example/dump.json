@@ -78,6 +78,11 @@
           "operands": [
             "(ram, 0x100003f82, 1)",
             "(register, 0x38, 1)"
+          ],
+          "pred": [],
+          "succ": [
+            3,
+            1
           ]
         },
         {
@@ -88,6 +93,12 @@
           "result": "(stack, 0xfffffffffffffff4, 4)",
           "operands": [
             "(const, 0x1, 4)"
+          ],
+          "pred": [
+            0
+          ],
+          "succ": [
+            2
           ]
         },
         {
@@ -97,6 +108,12 @@
           "operation": "BRANCH",
           "operands": [
             "(ram, 0x100003f89, 1)"
+          ],
+          "pred": [
+            1
+          ],
+          "succ": [
+            4
           ]
         },
         {
@@ -107,6 +124,12 @@
           "result": "(stack, 0xfffffffffffffff4, 4)",
           "operands": [
             "(const, 0x2, 4)"
+          ],
+          "pred": [
+            0
+          ],
+          "succ": [
+            4
           ]
         },
         {
@@ -118,6 +141,13 @@
           "operands": [
             "(stack, 0xfffffffffffffff4, 4)",
             "(stack, 0xfffffffffffffff4, 4)"
+          ],
+          "pred": [
+            2,
+            3
+          ],
+          "succ": [
+            5
           ]
         },
         {
@@ -128,6 +158,12 @@
           "result": "(register, 0x0, 4)",
           "operands": [
             "(stack, 0xfffffffffffffff4, 4)"
+          ],
+          "pred": [
+            4
+          ],
+          "succ": [
+            6
           ]
         },
         {
@@ -138,7 +174,11 @@
           "operands": [
             "(const, 0x0, 8)",
             "(register, 0x0, 4)"
-          ]
+          ],
+          "pred": [
+            5
+          ],
+          "succ": []
         }
       ]
     },
@@ -175,6 +215,10 @@
           "operands": [
             "(ram, 0x100003f60, 8)",
             "(const, 0x1, 1)"
+          ],
+          "pred": [],
+          "succ": [
+            1
           ]
         },
         {
@@ -185,6 +229,12 @@
           "operands": [
             "(ram, 0x100003f60, 8)",
             "(const, 0x0, 1)"
+          ],
+          "pred": [
+            0
+          ],
+          "succ": [
+            2
           ]
         },
         {
@@ -195,6 +245,12 @@
           "result": "(register, 0x0, 8)",
           "operands": [
             "(const, 0x0, 8)"
+          ],
+          "pred": [
+            1
+          ],
+          "succ": [
+            3
           ]
         },
         {
@@ -205,7 +261,11 @@
           "operands": [
             "(const, 0x0, 8)",
             "(register, 0x0, 8)"
-          ]
+          ],
+          "pred": [
+            2
+          ],
+          "succ": []
         }
       ]
     }

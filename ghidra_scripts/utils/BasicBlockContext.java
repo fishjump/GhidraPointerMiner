@@ -2,11 +2,11 @@ package utils;
 
 import java.util.ArrayList;
 
-import ghidra.program.model.pcode.PcodeBlock;
+import ghidra.program.model.pcode.PcodeBlockBasic;
 
 public class BasicBlockContext {
 
-    public ArrayList<PcodeBlock> succs = new ArrayList<>();
-    public ArrayList<PcodeBlock> preds = new ArrayList<>();
+    public ArrayList<PcodeBlockBasic> succs = new ArrayList<>();
+    public ArrayList<PcodeBlockBasic> preds = new ArrayList<>();
 
 }

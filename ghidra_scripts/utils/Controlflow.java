@@ -3,6 +3,7 @@ package utils;
 import java.util.TreeMap;
 
 import ghidra.program.model.pcode.HighFunction;
+import ghidra.program.model.pcode.PcodeBlockBasic;
 
 public class Controlflow {
     private final HighFunction highFunction;
@@ -24,7 +25,8 @@ public class Controlflow {
             } else {
                 for (int i = 0; i < basicBlock.getInSize(); i++) {
                     final var predecessor = basicBlock.getIn(i);
-                    context.preds.add(predecessor);
+                    assert (predecessor instanceof PcodeBlockBasic);
+                    context.preds.add(((PcodeBlockBasic) predecessor));
                 }
             }
 
@@ -33,7 +35,8 @@ public class Controlflow {
             } else {
                 for (int i = 0; i < basicBlock.getOutSize(); i++) {
                     final var successor = basicBlock.getOut(i);
-                    context.succs.add(successor);
+                    assert (successor instanceof PcodeBlockBasic);
+                    context.succs.add(((PcodeBlockBasic) successor));
                 }
             }
 

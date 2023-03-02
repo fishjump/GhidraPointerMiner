@@ -2,7 +2,9 @@ package utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
@@ -15,15 +17,20 @@ public class BasicBlockDumper {
 
     private final PcodeBlockBasic pcodeBlockBasic;
     private final BasicBlockContext basicBlockContext;
+    private final FunctionDumper parentDumper;
     private final IDGenerator idGenerator;
     private final List<PcodeOp> instructions;
     private final List<InstructionDumper> dumpers;
+    private final Map<Integer, InstructionDumper> idDumperMap;
+    private final String Id;
 
     public BasicBlockDumper(final PcodeBlockBasic pcodeBlockBasic, final BasicBlockContext basicBlockContext,
-            final IDGenerator idGenerator) {
+            final FunctionDumper parentDumper) {
         this.pcodeBlockBasic = pcodeBlockBasic;
         this.basicBlockContext = basicBlockContext;
-        this.idGenerator = idGenerator;
+        this.parentDumper = parentDumper;
+        this.idGenerator = parentDumper.getIdGenerator();
+        this.Id = pcodeBlockBasic.getStart().toString();
 
         this.instructions = new ArrayList<>();
         final var iterator = pcodeBlockBasic.getIterator();
@@ -34,7 +41,12 @@ public class BasicBlockDumper {
 
         this.dumpers = new ArrayList<>();
         for (final var instruction : instructions) {
-            this.dumpers.add(new InstructionDumper(instruction, this.idGenerator));
+            this.dumpers.add(new InstructionDumper(instruction, this));
+        }
+
+        this.idDumperMap = new TreeMap<>();
+        for (final var dumper : dumpers) {
+            idDumperMap.put(dumper.getId(), dumper);
         }
     }
 
@@ -75,4 +87,25 @@ public class BasicBlockDumper {
     public List<InstructionDumper> getInstructionDumpers() {
         return dumpers;
     }
+
+    public BasicBlockContext getBasicBlockContext() {
+        return basicBlockContext;
+    }
+
+    public Map<Integer, InstructionDumper> getIdDumperMap() {
+        return idDumperMap;
+    }
+
+    public FunctionDumper getParentDumper() {
+        return parentDumper;
+    }
+
+    public IDGenerator getIdGenerator() {
+        return idGenerator;
+    }
+
+    public String getId() {
+        return Id;
+    }
+
 }

@@ -11,16 +11,17 @@ import ghidra.program.model.pcode.PcodeOp;
 public class InstructionDumper {
 
     private final PcodeOp pcodeOp;
+    private final BasicBlockDumper parentDumper;
     private final int id;
 
-    public InstructionDumper(final PcodeOp pcodeOp, final IDGenerator idGenerator) {
+    public InstructionDumper(final PcodeOp pcodeOp, BasicBlockDumper parentDumper) {
         this.pcodeOp = pcodeOp;
-        this.id = idGenerator.next();
+        this.parentDumper = parentDumper;
+        this.id = parentDumper.getIdGenerator().next();
     }
 
     public JsonObject toJson() {
         final var jsonObject = new JsonObject();
-        final var jsonArray = new JsonArray();
 
         jsonObject.addProperty("id", id);
 
@@ -34,10 +35,56 @@ public class InstructionDumper {
             jsonObject.add("result", null);
         }
 
+        final var operandsArray = new JsonArray();
         for (final var input : pcodeOp.getInputs()) {
-            jsonArray.add(input.toString());
+            operandsArray.add(input.toString());
         }
-        jsonObject.add("operands", jsonArray);
+        jsonObject.add("operands", operandsArray);
+
+        final var predArray = new JsonArray();
+        if (parentDumper.getIdDumperMap().containsKey(id - 1)) {
+            // instruction which is not the begin
+            predArray.add(id - 1);
+        } else {
+            // for the begin instruction of a bb
+            final var parentContext = parentDumper.getBasicBlockContext();
+            final var functionDumper = parentDumper.getParentDumper();
+            final var basicBlockDumperMap = functionDumper.getIdDumperMap();
+
+            for (final var pred : parentContext.preds) {
+                assert (basicBlockDumperMap.containsKey(pred.getStart().toString()));
+
+                final var predBlockDumper = basicBlockDumperMap.get(pred.getStart().toString());
+                InstructionDumper predInstDumper = null;
+                for (var dumper : predBlockDumper.getInstructionDumpers()) {
+                    predInstDumper = dumper;
+                }
+                assert (predInstDumper != null);
+
+                predArray.add(predInstDumper.getId());
+            }
+        }
+        jsonObject.add("pred", predArray);
+
+        final var succArray = new JsonArray();
+        if (parentDumper.getIdDumperMap().containsKey(id + 1)) {
+            // instruction which is not the end
+            succArray.add(id + 1);
+        } else {
+            // for the end instruction of a bb
+            final var parentContext = parentDumper.getBasicBlockContext();
+            final var functionDumper = parentDumper.getParentDumper();
+            final var basicBlockDumperMap = functionDumper.getIdDumperMap();
+
+            for (final var succ : parentContext.succs) {
+                assert (basicBlockDumperMap.containsKey(succ.getStart().toString()));
+
+                final var succBlockDumper = basicBlockDumperMap.get(succ.getStart().toString());
+                var succInstDumper = succBlockDumper.getInstructionDumpers().get(0);
+                succArray.add(succInstDumper.getId());
+            }
+        }
+        jsonObject.add("succ", succArray);
 
         return jsonObject;
     }

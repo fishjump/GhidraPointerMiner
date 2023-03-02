@@ -48,8 +48,8 @@ public:
   Function *getFunction();
   BasicBlock *getBlock();
 
-  std::vector<Instruction *> getPrev();
-  std::vector<Instruction *> getNext();
+  std::vector<Instruction *> getPreds();
+  std::vector<Instruction *> getSuccs();
 
   OperandContainerType &getOperands();
   const Value *getResult();

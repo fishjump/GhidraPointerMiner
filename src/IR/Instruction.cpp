@@ -120,8 +120,8 @@ const std::string &Instruction::getOp() { return op_; }
 Function *Instruction::getFunction() { return func_; }
 BasicBlock *Instruction::getBlock() { return block_; }
 
-std::vector<Instruction *> Instruction::getPrev() { return prev_; }
-std::vector<Instruction *> Instruction::getNext() { return next_; }
+std::vector<Instruction *> Instruction::getPreds() { return prev_; }
+std::vector<Instruction *> Instruction::getSuccs() { return next_; }
 
 Instruction::OperandContainerType &Instruction::getOperands() {
   return operands_;

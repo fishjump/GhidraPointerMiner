@@ -83,38 +83,39 @@ const std::string &Function::getName() { return name_; }
 
 void Function::ud_chain(Instruction *inst) {
   // TODO: implement this function
-  // // init visited set for blocks
-  // std::set<const BasicBlock *> visited;
+  // init visited set for blocks
+  std::set<const Instruction *> visited;
 
-  // std::map</* use: */ const Value *,
-  //          std::map<Instruction *, std::vector<Instruction *>>>
-  //     trace_tbl;
-  // for (auto &var : variables_) {
-  //   trace_tbl.emplace(&var,
-  //                     std::map<Instruction *, std::vector<Instruction *>>());
-  // }
+  std::map<const Value *, std::vector<Instruction *>> trace_tbl;
+  for (const auto &it : inst->getOperands()) {
+    trace_tbl.insert({it, {}});
+  }
 
-  // // add all blocks into the worklist
-  // std::vector<BasicBlock *> worklist;
+  std::vector<Instruction *> worklist = inst->getPreds();
 
-  // // DFS
-  // while (!worklist.empty()) {
-  //   auto *block = worklist.back();
-  //   worklist.pop_back();
+  // BFS
+  while (!worklist.empty()) {
+    auto *inst = worklist.back();
+    worklist.pop_back();
 
-  //   if (visited.find(block) != visited.end()) {
-  //     continue;
-  //   }
-  //   visited.emplace(block);
+    if (visited.find(inst) != visited.end()) {
+      continue;
+    }
+    visited.emplace(inst);
 
-  //   auto &insts = block->getInsts();
-  //   for (auto it = insts.rbegin(); it != insts.rend(); it++) {
-  //     auto &inst = it->second;
-  //     for (auto &operand : inst->getOperands()) {
-  //       trace_tbl[operand];
-  //     }
-  //   }
-  // }
+    auto def = inst->getResult();
+    // is a assignment instruction and it defs the variables we are interested
+    if (def != nullptr) {
+      auto it = trace_tbl.find(def);
+      if (it != trace_tbl.end()) {
+        it->second.push_back(inst);
+      }
+    }
+
+    for (auto *pred : inst->getPreds()) {
+      worklist.push_back(pred);
+    }
+  }
 }
 
 Function::BasicBlockContainerType::iterator Function::begin() {

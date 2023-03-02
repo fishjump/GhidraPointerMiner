@@ -64,7 +64,7 @@ public class InstructionDumper {
                 predArray.add(predInstDumper.getId());
             }
         }
-        jsonObject.add("pred", predArray);
+        jsonObject.add("preds", predArray);
 
         final var succArray = new JsonArray();
         if (parentDumper.getIdDumperMap().containsKey(id + 1)) {
@@ -84,7 +84,7 @@ public class InstructionDumper {
                 succArray.add(succInstDumper.getId());
             }
         }
-        jsonObject.add("succ", succArray);
+        jsonObject.add("succs", succArray);
 
         return jsonObject;
     }

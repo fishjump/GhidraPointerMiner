@@ -2,6 +2,7 @@
 
 #include "_typ_dcl.hpp"
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -14,11 +15,14 @@ enum ValueType { INT, FLOAT, POINTER, BOOL, UNKNOWN };
 
 class Value {
   const std::string meta_;
+
   // TODO: implement string to ValueType conversion
   // ValueType type_;
   std::string type_;
   size_t id_;
   size_t size_;
+
+  std::map<Instruction *, std::vector<Instruction *>> defs_;
 
   ValueType value_type_;
 
@@ -29,6 +33,8 @@ public:
   const std::string &getType() const;
   size_t getId() const;
   size_t getSize() const;
+
+  void addDef(Instruction *user, Instruction *def);
 
   bool operator==(const Value &rhs) const;
   bool operator<(const Value &rhs) const;

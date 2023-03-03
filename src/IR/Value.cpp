@@ -73,3 +73,10 @@ bool Value::operator<(const Value &rhs) const {
 }
 
 Value::operator std::string() const { return meta_; }
+
+void Value::addDef(Instruction *user, Instruction *def) {
+  BOOST_ASSERT_MSG(user != nullptr, "user cannot be nullptr");
+  BOOST_ASSERT_MSG(def != nullptr, "def cannot be nullptr");
+
+  defs_[user].push_back(def);
+}

@@ -143,6 +143,16 @@ void Function::ud_chain(Instruction *inst) {
   };
 
   printChain(trace_tbl);
+
+  const auto dumpToValue = [inst](const auto &tbl) {
+    for (const auto &[val, insts] : tbl) {
+      for (const auto &def : insts) {
+        val->addDef(/* use: */ inst, def);
+      }
+    }
+  };
+
+  dumpToValue(trace_tbl);
 }
 
 Function::BasicBlockContainerType::iterator Function::begin() {

@@ -9,7 +9,8 @@
 
 namespace pointer_solver {
 
-enum ValueType { CONST, RAM, REGISTER, STACK, UNIQUE };
+enum ValueStorageType { CONST, RAM, REGISTER, STACK, UNIQUE };
+enum ValueType { INT, FLOAT, POINTER, BOOL, UNKNOWN };
 
 class Value {
   const std::string meta_;
@@ -18,6 +19,8 @@ class Value {
   std::string type_;
   size_t id_;
   size_t size_;
+
+  ValueType value_type_;
 
 public:
   Value(const std::string &meta);
@@ -29,6 +32,8 @@ public:
 
   bool operator==(const Value &rhs) const;
   bool operator<(const Value &rhs) const;
+
+  operator std::string() const;
 };
 
 } // namespace pointer_solver

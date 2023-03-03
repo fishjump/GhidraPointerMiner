@@ -28,6 +28,12 @@ int main() {
                    "input json file must be a json object");
 
   pointer_solver::Program prog(json_obj.as_object());
-
+  for (const auto &func : prog) {
+    if (func->getName() != "foo") {
+      continue;
+    }
+    std::cout << func->getName() << std::endl;
+    func->ud_chain(&func->inst_find(4)->second);
+  }
   return 0;
 }

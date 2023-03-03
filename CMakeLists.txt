@@ -20,7 +20,7 @@ include_directories(include)
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Add Boost library
-find_package(Boost COMPONENTS json REQUIRED)
+find_package(Boost COMPONENTS json log REQUIRED)
 
 # Set output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

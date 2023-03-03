@@ -1,6 +1,9 @@
 #include "Instruction.hpp"
 
+#include <sstream>
+
 #include <boost/assert.hpp>
+#include <boost/format.hpp>
 #include <boost/log/trivial.hpp>
 
 using namespace pointer_solver;
@@ -92,7 +95,7 @@ void Instruction::build() {
     auto it = func_->var_find(operand.as_string());
     BOOST_ASSERT_MSG(it != func_->var_end(),
                      "reference a variable which does not exist");
-    operands_.emplace_back(&*it);
+    operands_.emplace_back(&it->second);
   }
 
   if (!meta_.contains("result")) {
@@ -108,7 +111,7 @@ void Instruction::build() {
   }
 
   auto res_it = func_->var_find(meta_.at("result").as_string());
-  result_ = res_it == func_->var_end() ? nullptr : &*res_it;
+  result_ = res_it == func_->var_end() ? nullptr : &res_it->second;
 
   is_built_ = true;
 }
@@ -126,6 +129,22 @@ std::vector<Instruction *> Instruction::getSuccs() { return next_; }
 Instruction::OperandContainerType &Instruction::getOperands() {
   return operands_;
 }
-const Value *Instruction::getResult() { return result_; }
+Value *Instruction::getResult() { return result_; }
 
 Instruction::DefMapContainerType &Instruction::getDefs() { return defs_; }
+
+Instruction::operator std::string() {
+  std::stringstream ss;
+
+  if (result_ != nullptr) {
+    ss << boost::format("%1% = ") % static_cast<std::string>(*result_);
+
+    ss << getOp() << " ";
+
+    for (const auto &operand : operands_) {
+      ss << boost::format("%1% ") % static_cast<std::string>(*result_);
+    }
+  }
+
+  return ss.str();
+}

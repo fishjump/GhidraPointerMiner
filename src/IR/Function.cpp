@@ -3,6 +3,7 @@
 #include <stack>
 
 #include <boost/assert.hpp>
+#include <boost/format.hpp>
 #include <boost/log/trivial.hpp>
 
 using namespace pointer_solver;
@@ -57,7 +58,7 @@ Function::Function(const boost::json::object &json_obj) {
   name_ = json_obj.at("name").as_string();
 
   for (const auto &var : json_obj.at("variables").as_array()) {
-    variables_.emplace(var.as_string());
+    variables_.emplace(var.as_string(), var.as_string());
   }
 
   for (const auto &inst : json_obj.at("instructions").as_array()) {
@@ -86,14 +87,16 @@ void Function::ud_chain(Instruction *inst) {
   // init visited set for blocks
   std::set<const Instruction *> visited;
 
-  std::map<const Value *, std::vector<Instruction *>> trace_tbl;
+  std::map<Value *, std::vector<Instruction *>> trace_tbl;
   for (const auto &it : inst->getOperands()) {
+    BOOST_LOG_TRIVIAL(debug)
+        << boost::format("tracing value %1% in inst %2%\n") %
+               static_cast<std::string>(*it) % static_cast<std::string>(*inst);
     trace_tbl.insert({it, {}});
   }
 
-  std::vector<Instruction *> worklist = inst->getPreds();
-
   // BFS
+  std::vector<Instruction *> worklist = inst->getPreds();
   while (!worklist.empty()) {
     auto *inst = worklist.back();
     worklist.pop_back();
@@ -104,11 +107,22 @@ void Function::ud_chain(Instruction *inst) {
     visited.emplace(inst);
 
     auto def = inst->getResult();
-    // is a assignment instruction and it defs the variables we are interested
+    // is a assignment instruction
     if (def != nullptr) {
+      // defs of this assignment are what we are interested in
       auto it = trace_tbl.find(def);
       if (it != trace_tbl.end()) {
+        BOOST_LOG_TRIVIAL(debug)
+            << boost::format("found value %1% in inst %2%") %
+                   static_cast<std::string>(*def) %
+                   static_cast<std::string>(*inst);
+        // add this instruction to the defs (value)
         it->second.push_back(inst);
+
+        // also add the uses into the trace table
+        for (const auto &use : inst->getOperands()) {
+          trace_tbl.insert({use, {}});
+        }
       }
     }
 
@@ -116,6 +130,19 @@ void Function::ud_chain(Instruction *inst) {
       worklist.push_back(pred);
     }
   }
+
+  const auto printChain = [](const auto &tbl) {
+    for (const auto &[val, insts] : tbl) {
+      BOOST_LOG_TRIVIAL(debug)
+          << boost::format("use: value %1%") % static_cast<std::string>(*val);
+      for (const auto &inst : insts) {
+        BOOST_LOG_TRIVIAL(debug)
+            << boost::format("defs:  %1%") % static_cast<std::string>(*inst);
+      }
+    }
+  };
+
+  printChain(trace_tbl);
 }
 
 Function::BasicBlockContainerType::iterator Function::begin() {

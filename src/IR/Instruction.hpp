@@ -14,7 +14,7 @@
 namespace pointer_solver {
 
 class Instruction {
-  using OperandContainerType = std::vector<const Value *>;
+  using OperandContainerType = std::vector<Value *>;
   using DefMapContainerType = std::map<Value *, std::vector<Instruction *>>;
 
   const boost::json::object meta_;
@@ -29,7 +29,7 @@ class Instruction {
   std::vector<Instruction *> prev_;
   std::vector<Instruction *> next_;
 
-  const Value *result_;
+  Value *result_;
   OperandContainerType operands_;
 
   DefMapContainerType defs_;
@@ -52,8 +52,10 @@ public:
   std::vector<Instruction *> getSuccs();
 
   OperandContainerType &getOperands();
-  const Value *getResult();
+  Value *getResult();
 
   DefMapContainerType &getDefs();
+
+  operator std::string();
 };
 } // namespace pointer_solver

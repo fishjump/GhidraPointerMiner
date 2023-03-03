@@ -6,7 +6,6 @@
 #include "Value.hpp"
 
 #include <map>
-#include <set>
 #include <string>
 
 #include <boost/json.hpp>
@@ -16,7 +15,7 @@ namespace pointer_solver {
 class Function {
   using BasicBlockContainerType = std::map</* id: */ std::string, BasicBlock>;
   using InstructionContainerType = std::map</* id: */ size_t, Instruction>;
-  using ValueContainerType = std::set<Value>;
+  using ValueContainerType = std::map</* id: */ std::string, Value>;
 
   std::string name_;
   BasicBlockContainerType blocks_;

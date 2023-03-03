@@ -48,7 +48,8 @@ auto parse(const std::string &name) {
 
 } // namespace
 
-Value::Value(const std::string &meta) : meta_(meta) {
+Value::Value(const std::string &meta)
+    : meta_(meta), value_type_(ValueType::UNKNOWN) {
   const auto [type, id, size] = parse(meta_);
   type_ = type;
   id_ = id;
@@ -70,3 +71,5 @@ bool Value::operator==(const Value &rhs) const {
 bool Value::operator<(const Value &rhs) const {
   return this->type_ < rhs.type_ && this->id_ < rhs.id_;
 }
+
+Value::operator std::string() const { return meta_; }

@@ -13,6 +13,22 @@ namespace pointer_solver {
 enum ValueStorageType { CONST, RAM, REGISTER, STACK, UNIQUE };
 enum ValueType { INT, FLOAT, POINTER, BOOL, UNKNOWN };
 
+inline std::string toString(ValueType type) {
+  switch (type) {
+  case INT:
+    return "int";
+  case FLOAT:
+    return "float";
+  case POINTER:
+    return "pointer";
+  case BOOL:
+    return "bool";
+  case UNKNOWN:
+    return "unknown";
+  }
+  return "unknown";
+}
+
 class Value {
   const std::string meta_;
 
@@ -34,7 +50,8 @@ public:
   size_t getId() const;
   size_t getSize() const;
 
-  void setType(const std::string &type);
+  void setValueType(ValueType type);
+  ValueType getValueType() const;
 
   void addDef(Instruction *user, Instruction *def);
   const std::map<Instruction *, std::vector<Instruction *>> &getDefs();

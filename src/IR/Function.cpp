@@ -1,6 +1,6 @@
 #include "Function.hpp"
 
-#include <stack>
+#include <iostream>
 
 #include <boost/assert.hpp>
 #include <boost/format.hpp>
@@ -131,39 +131,45 @@ void deduceType(std::vector<Instruction *> path) {
 
   if (inst->getOp() == "LOAD") {
     auto operand = inst->getOperands()[0];
-    operand->setType("PTR");
+    operand->setValueType(ValueType::POINTER);
   } else if (inst->getOp() == "STORE") {
     auto operand = inst->getOperands()[0];
-    operand->setType("PTR");
-  } else if (false /* starts with INT */) {
+    operand->setValueType(ValueType::POINTER);
+  } else if (inst->getOp().find("INT") != std::string::npos) {
     auto result = inst->getResult();
     if (result != nullptr) {
-      result->setType("UNKNOWN");
+      result->setValueType(ValueType::UNKNOWN);
     }
 
+    std::cout << "deduce type for " << inst->getOp() << std::endl;
+
     for (auto &operand : inst->getOperands()) {
-      if (result->getType() == "PTR") {
+      if (result->getValueType() == ValueType::POINTER) {
         if (operand->getSize() == result->getSize()) {
-          operand->setType("PTR");
+          operand->setValueType(ValueType::POINTER);
         } else {
-          operand->setType("INT");
+          operand->setValueType(ValueType::INT);
         }
-      } else if (result->getType() == "INT") {
-        operand->setType("INT");
-      } else if (result->getType() == "UNKNOWN") {
-        operand->setType("INT");
+      } else if (result->getValueType() == ValueType::INT) {
+        operand->setValueType(ValueType::INT);
+      } else if (result->getValueType() == ValueType::UNKNOWN) {
+        operand->setValueType(ValueType::INT);
       }
     }
   }
 
   // propagate type
   for (auto &operand : inst->getOperands()) {
-    if (operand->getType() != "INT" && operand->getType() != "PTR") {
+    if (operand->getValueType() != ValueType::INT &&
+        operand->getValueType() != ValueType::POINTER) {
       continue;
     }
 
-    auto defs = operand->getDefs().at(inst);
-    for (auto &def : defs) {
+    auto defs = operand->getDefs().find(inst);
+    if (defs == operand->getDefs().end()) {
+      continue;
+    }
+    for (auto &def : defs->second) {
       auto new_path = path;
       new_path.push_back(def);
       deduceType(new_path);

@@ -59,7 +59,7 @@ void printUDChain(pointer_solver::Function *f,
 } // namespace
 
 int main() {
-  auto json_str = read("example/dump.json");
+  auto json_str = read("example/example2/dump.json");
 
   auto json_obj = boost::json::parse(json_str);
   BOOST_ASSERT_MSG(json_obj.is_object(),
@@ -110,6 +110,22 @@ int main() {
     for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
       auto &inst = it->second;
       printUDChain(func.get(), &inst);
+    }
+  }
+
+  for (const auto &func : prog) {
+    for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
+      auto &inst = it->second;
+      func->deduceType(&inst);
+    }
+  }
+
+  for (const auto &func : prog) {
+    std::cout << func->getName() << std::endl;
+    for (auto it = func->var_begin(); it != func->var_end(); ++it) {
+      auto &v = it->second;
+      std::cout << static_cast<std::string>(v) << " : "
+                << toString(v.getValueType()) << std::endl;
     }
   }
 

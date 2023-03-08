@@ -85,4 +85,6 @@ const std::map<Instruction *, std::vector<Instruction *>> &Value::getDefs() {
   return defs_;
 }
 
-void Value::setType(const std::string &type) { type_ = type; }
+void Value::setValueType(ValueType type) { value_type_ = type; }
+
+ValueType Value::getValueType() const { return value_type_; }

@@ -138,12 +138,12 @@ Instruction::operator std::string() {
 
   if (result_ != nullptr) {
     ss << boost::format("%1% = ") % static_cast<std::string>(*result_);
+  }
 
-    ss << getOp() << " ";
+  ss << getOp() << " ";
 
-    for (const auto &operand : operands_) {
-      ss << boost::format("%1% ") % static_cast<std::string>(*result_);
-    }
+  for (const auto &operand : operands_) {
+    ss << boost::format("%1% ") % static_cast<std::string>(*operand);
   }
 
   return ss.str();

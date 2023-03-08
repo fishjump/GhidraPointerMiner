@@ -80,3 +80,9 @@ void Value::addDef(Instruction *user, Instruction *def) {
 
   defs_[user].push_back(def);
 }
+
+const std::map<Instruction *, std::vector<Instruction *>> &Value::getDefs() {
+  return defs_;
+}
+
+void Value::setType(const std::string &type) { type_ = type; }

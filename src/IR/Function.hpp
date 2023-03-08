@@ -6,6 +6,8 @@
 #include "Value.hpp"
 
 #include <map>
+#include <memory>
+#include <set>
 #include <string>
 
 #include <boost/json.hpp>
@@ -27,7 +29,14 @@ public:
 
   const std::string &getName();
 
-  void ud_chain(Instruction *inst);
+  std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> getUseDefChain(
+      Instruction *inst, std::set<const Instruction *> visited,
+      std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain);
+
+  std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
+  getUseDefChain(Instruction *inst);
+
+  void deduceType(Instruction *inst);
 
   BasicBlockContainerType::iterator begin();
   BasicBlockContainerType::const_iterator cbegin() const;

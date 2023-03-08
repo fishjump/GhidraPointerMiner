@@ -34,7 +34,10 @@ public:
   size_t getId() const;
   size_t getSize() const;
 
+  void setType(const std::string &type);
+
   void addDef(Instruction *user, Instruction *def);
+  const std::map<Instruction *, std::vector<Instruction *>> &getDefs();
 
   bool operator==(const Value &rhs) const;
   bool operator<(const Value &rhs) const;

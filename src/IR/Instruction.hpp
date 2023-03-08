@@ -36,6 +36,8 @@ class Instruction {
 
   bool is_built_;
 
+  DefMapContainerType &getDefs();
+
 public:
   Instruction(Function *func, const boost::json::object &json_obj);
 
@@ -53,8 +55,6 @@ public:
 
   OperandContainerType &getOperands();
   Value *getResult();
-
-  DefMapContainerType &getDefs();
 
   operator std::string();
 };

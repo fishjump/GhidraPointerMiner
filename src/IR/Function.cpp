@@ -82,77 +82,98 @@ Function::Function(const boost::json::object &json_obj) {
 
 const std::string &Function::getName() { return name_; }
 
-void Function::ud_chain(Instruction *inst) {
-  // TODO: implement this function
-  // init visited set for blocks
-  std::set<const Instruction *> visited;
+std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
+Function::getUseDefChain(
+    Instruction *inst, std::set<const Instruction *> visited,
+    std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain) {
+  if (visited.find(inst) != visited.end()) {
+    return ud_chain;
+  }
+  visited.insert(inst);
 
-  std::map<Value *, std::vector<Instruction *>> trace_tbl;
-  for (const auto &it : inst->getOperands()) {
-    BOOST_LOG_TRIVIAL(debug)
-        << boost::format("tracing value %1% in inst %2%\n") %
-               static_cast<std::string>(*it) % static_cast<std::string>(*inst);
-    trace_tbl.insert({it, {}});
+  // is a not assignment instruction, skip
+  auto def_val = inst->getResult();
+  if (def_val != nullptr && ud_chain->find(def_val) != ud_chain->end()) {
+    ud_chain->at(def_val).push_back(inst);
   }
 
-  // BFS
-  std::vector<Instruction *> worklist = inst->getPreds();
-  while (!worklist.empty()) {
-    auto *inst = worklist.back();
-    worklist.pop_back();
+  for (auto p_inst : inst->getPreds()) {
+    getUseDefChain(p_inst, visited, ud_chain);
+  }
 
-    if (visited.find(inst) != visited.end()) {
+  return ud_chain;
+}
+
+std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
+Function::getUseDefChain(Instruction *inst) {
+  std::map<Value *, std::vector<Instruction *>> map;
+  for (auto &operand : inst->getOperands()) {
+    map.insert({operand, {}});
+  }
+
+  auto res = std::make_shared<decltype(map)>(map);
+
+  for (auto p_inst : inst->getPreds()) {
+    getUseDefChain(p_inst, {}, res);
+  }
+
+  for (auto &[val, defs] : *res) {
+    for (auto *def : defs) {
+      val->addDef(inst, def);
+    }
+  }
+
+  return res;
+}
+
+void deduceType(std::vector<Instruction *> path) {
+  auto inst = path.back();
+
+  if (inst->getOp() == "LOAD") {
+    auto operand = inst->getOperands()[0];
+    operand->setType("PTR");
+  } else if (inst->getOp() == "STORE") {
+    auto operand = inst->getOperands()[0];
+    operand->setType("PTR");
+  } else if (false /* starts with INT */) {
+    auto result = inst->getResult();
+    if (result != nullptr) {
+      result->setType("UNKNOWN");
+    }
+
+    for (auto &operand : inst->getOperands()) {
+      if (result->getType() == "PTR") {
+        if (operand->getSize() == result->getSize()) {
+          operand->setType("PTR");
+        } else {
+          operand->setType("INT");
+        }
+      } else if (result->getType() == "INT") {
+        operand->setType("INT");
+      } else if (result->getType() == "UNKNOWN") {
+        operand->setType("INT");
+      }
+    }
+  }
+
+  // propagate type
+  for (auto &operand : inst->getOperands()) {
+    if (operand->getType() != "INT" && operand->getType() != "PTR") {
       continue;
     }
-    visited.emplace(inst);
 
-    auto def = inst->getResult();
-    // is a assignment instruction
-    if (def != nullptr) {
-      // defs of this assignment are what we are interested in
-      auto it = trace_tbl.find(def);
-      if (it != trace_tbl.end()) {
-        BOOST_LOG_TRIVIAL(debug)
-            << boost::format("found value %1% in inst %2%") %
-                   static_cast<std::string>(*def) %
-                   static_cast<std::string>(*inst);
-        // add this instruction to the defs (value)
-        it->second.push_back(inst);
-
-        // also add the uses into the trace table
-        for (const auto &use : inst->getOperands()) {
-          trace_tbl.insert({use, {}});
-        }
-      }
-    }
-
-    for (auto *pred : inst->getPreds()) {
-      worklist.push_back(pred);
+    auto defs = operand->getDefs().at(inst);
+    for (auto &def : defs) {
+      auto new_path = path;
+      new_path.push_back(def);
+      deduceType(new_path);
     }
   }
+}
 
-  const auto printChain = [](const auto &tbl) {
-    for (const auto &[val, insts] : tbl) {
-      BOOST_LOG_TRIVIAL(debug)
-          << boost::format("use: value %1%") % static_cast<std::string>(*val);
-      for (const auto &inst : insts) {
-        BOOST_LOG_TRIVIAL(debug)
-            << boost::format("defs:  %1%") % static_cast<std::string>(*inst);
-      }
-    }
-  };
-
-  printChain(trace_tbl);
-
-  const auto dumpToValue = [inst](const auto &tbl) {
-    for (const auto &[val, insts] : tbl) {
-      for (const auto &def : insts) {
-        val->addDef(/* use: */ inst, def);
-      }
-    }
-  };
-
-  dumpToValue(trace_tbl);
+void Function::deduceType(Instruction *inst) {
+  std::vector<Instruction *> path{inst};
+  ::deduceType(path);
 }
 
 Function::BasicBlockContainerType::iterator Function::begin() {

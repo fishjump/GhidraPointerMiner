@@ -12,7 +12,7 @@
 namespace pointer_solver {
 
 class Program {
-  using FunctionContainerType = std::vector<const std::shared_ptr<Function>>;
+  using FunctionContainerType = std::vector<std::shared_ptr<Function>>;
 
   FunctionContainerType funcs_;
 

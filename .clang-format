@@ -5,6 +5,9 @@ BasedOnStyle: LLVM
 IndentWidth: 2
 TabWidth: 2
 
+# Disable one line function bodies
+AllowShortFunctionsOnASingleLine: None
+
 # Set the include order and grouping rules
 SortIncludes: CaseSensitive
 IncludeBlocks: Regroup

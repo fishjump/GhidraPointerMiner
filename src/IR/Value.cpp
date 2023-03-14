@@ -85,7 +85,7 @@ const std::map<Instruction *, std::vector<Instruction *>> &Value::getDefs() {
   return defs_;
 }
 
-void Value::meet(const boost::statechart::event_base &event) {
+void Value::deduceType(const boost::statechart::event_base &event) {
   value_type_.process_event(event);
 }
 

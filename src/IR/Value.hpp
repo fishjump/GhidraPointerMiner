@@ -32,7 +32,7 @@ public:
   size_t getSize() const;
 
   void propagateTo(Value *value);
-  void meet(const boost::statechart::event_base &event);
+  void deduceType(const boost::statechart::event_base &event);
   std::string getValueType() const;
 
   void addDef(Instruction *user, Instruction *def);

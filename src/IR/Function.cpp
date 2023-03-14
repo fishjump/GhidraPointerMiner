@@ -1,5 +1,7 @@
 #include "Function.hpp"
 
+#include "PcodeInstructions.hpp"
+
 #include <iostream>
 
 #include <boost/assert.hpp>
@@ -129,42 +131,38 @@ Function::getUseDefChain(Instruction *inst) {
 void deduceType(std::vector<Instruction *> path) {
   auto inst = path.back();
 
-  if (inst->getOp() == "LOAD") {
-    auto operand = inst->getOperands()[0];
-    operand->setValueType(ValueType::POINTER);
-  } else if (inst->getOp() == "STORE") {
-    auto operand = inst->getOperands()[0];
-    operand->setValueType(ValueType::POINTER);
-  } else if (inst->getOp().find("INT") != std::string::npos) {
-    auto result = inst->getResult();
-    if (result != nullptr) {
-      result->setValueType(ValueType::UNKNOWN);
-    }
-
-    std::cout << "deduce type for " << inst->getOp() << std::endl;
-
-    for (auto &operand : inst->getOperands()) {
-      if (result->getValueType() == ValueType::POINTER) {
-        if (operand->getSize() == result->getSize()) {
-          operand->setValueType(ValueType::POINTER);
-        } else {
-          operand->setValueType(ValueType::INT);
-        }
-      } else if (result->getValueType() == ValueType::INT) {
-        operand->setValueType(ValueType::INT);
-      } else if (result->getValueType() == ValueType::UNKNOWN) {
-        operand->setValueType(ValueType::INT);
-      }
-    }
+  if (inst->getOp() == "LOAD" && inst->getResult() != nullptr &&
+      inst->getOperands().size() == 1) {
+    Load().meet(inst->getResult(), inst->getOperands()[0]);
+  } else if (inst->getOp() == "LOAD" && inst->getResult() != nullptr &&
+             inst->getOperands().size() == 2) {
+    Load().meet(inst->getResult(), inst->getOperands()[0],
+                inst->getOperands()[1]);
+  } else if (inst->getOp() == "STORE" && inst->getOperands().size() == 2) {
+    Store().meet(inst->getOperands()[0], inst->getOperands()[1]);
+  } else if (inst->getOp() == "STORE" && inst->getOperands().size() == 3) {
+    Store().meet(inst->getOperands()[0], inst->getOperands()[1],
+                 inst->getOperands()[2]);
+  } else if (inst->getOp() == "BRANCH" && inst->getOperands().size() == 1) {
+    Branch().meet(inst->getOperands()[0]);
+  } else if (inst->getOp() == "CBRANCH" && inst->getOperands().size() == 2) {
+    CBranch().meet(inst->getOperands()[0], inst->getOperands()[1]);
+  } else if (inst->getOp() == "BRANCHIND" && inst->getOperands().size() == 1) {
+    BranchIndirect().meet(inst->getOperands()[0]);
+  } else if (inst->getOp() == "CALL" && inst->getOperands().size() >= 1) {
+    Call().meet(inst->getOperands()[0]);
+  } else if (inst->getOp() == " CALLIND" && inst->getOperands().size() >= 1) {
+    CallIndirect().meet(inst->getOperands()[0]);
+  } else if (inst->getOp() == "RETURN" && inst->getOperands().size() >= 1) {
+    Return().meet(inst->getOperands()[0]);
+  } else if (inst->getOp() == "PTRSUB" && inst->getResult() != nullptr &&
+             inst->getOperands().size() == 2) {
+    PtrSub().meet(inst->getResult(), inst->getOperands()[0],
+                  inst->getOperands()[1]);
   }
 
-  // propagate type
+  // // propagate type
   for (auto &operand : inst->getOperands()) {
-    if (operand->getValueType() != ValueType::INT &&
-        operand->getValueType() != ValueType::POINTER) {
-      continue;
-    }
-
     auto defs = operand->getDefs().find(inst);
     if (defs == operand->getDefs().end()) {
       continue;

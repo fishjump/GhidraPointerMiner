@@ -2,6 +2,8 @@
 
 #include "_typ_dcl.hpp"
 
+#include "TypeDeducer.hpp"
+
 #include <map>
 #include <memory>
 #include <string>
@@ -10,37 +12,16 @@
 
 namespace pointer_solver {
 
-enum ValueStorageType { CONST, RAM, REGISTER, STACK, UNIQUE };
-enum ValueType { INT, FLOAT, POINTER, BOOL, UNKNOWN };
-
-inline std::string toString(ValueType type) {
-  switch (type) {
-  case INT:
-    return "int";
-  case FLOAT:
-    return "float";
-  case POINTER:
-    return "pointer";
-  case BOOL:
-    return "bool";
-  case UNKNOWN:
-    return "unknown";
-  }
-  return "unknown";
-}
-
 class Value {
   const std::string meta_;
 
-  // TODO: implement string to ValueType conversion
-  // ValueType type_;
   std::string type_;
   size_t id_;
   size_t size_;
 
   std::map<Instruction *, std::vector<Instruction *>> defs_;
 
-  ValueType value_type_;
+  TypeDeducer value_type_;
 
 public:
   Value(const std::string &meta);
@@ -50,8 +31,9 @@ public:
   size_t getId() const;
   size_t getSize() const;
 
-  void setValueType(ValueType type);
-  ValueType getValueType() const;
+  void propagateTo(Value *value);
+  void meet(const boost::statechart::event_base &event);
+  std::string getValueType() const;
 
   void addDef(Instruction *user, Instruction *def);
   const std::map<Instruction *, std::vector<Instruction *>> &getDefs();

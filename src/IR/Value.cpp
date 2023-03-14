@@ -32,7 +32,6 @@ auto parse(const std::string &name) {
   BOOST_ASSERT_MSG(match.size() == 4,
                    "expect 4 (1 + 3 sub) matched group: type, id, size");
 
-  // TODO: Use TypeValue instead of string
   struct {
     std::string type;
     size_t id;
@@ -48,12 +47,13 @@ auto parse(const std::string &name) {
 
 } // namespace
 
-Value::Value(const std::string &meta)
-    : meta_(meta), value_type_(ValueType::UNKNOWN) {
+Value::Value(const std::string &meta) : meta_(meta), value_type_() {
   const auto [type, id, size] = parse(meta_);
   type_ = type;
   id_ = id;
   size_ = size;
+
+  value_type_.initiate();
 }
 
 Value::Value(const boost::json::string &meta) : Value(std::string(meta)) {}
@@ -85,6 +85,11 @@ const std::map<Instruction *, std::vector<Instruction *>> &Value::getDefs() {
   return defs_;
 }
 
-void Value::setValueType(ValueType type) { value_type_ = type; }
+void Value::meet(const boost::statechart::event_base &event) {
+  value_type_.process_event(event);
+}
 
-ValueType Value::getValueType() const { return value_type_; }
+void Value::propagateTo(Value *value) {
+  value_type_.propagateTo(&value->value_type_);
+}
+std::string Value::getValueType() const { return value_type_.type(); }

@@ -124,8 +124,8 @@ int main() {
     std::cout << func->getName() << std::endl;
     for (auto it = func->var_begin(); it != func->var_end(); ++it) {
       auto &v = it->second;
-      std::cout << static_cast<std::string>(v) << " : "
-                << toString(v.getValueType()) << std::endl;
+      std::cout << static_cast<std::string>(v) << " : " << v.getValueType()
+                << std::endl;
     }
   }
 

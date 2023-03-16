@@ -5,20 +5,20 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import dumper.utils.CodeBlockWrapper;
 import dumper.utils.Controlflow;
 import dumper.utils.PcodeOpString;
-import ghidra.program.model.block.CodeBlock;
 import ghidra.program.model.pcode.PcodeOp;
 
 public class InstructionDumper {
 
     private final PcodeOp pcodeOp;
-    private final CodeBlock parent;
+    private final CodeBlockWrapper parent;
     private final Controlflow controlflow;
 
     private final int id;
 
-    public InstructionDumper(PcodeOp pcodeOp, CodeBlock parent, Controlflow controlflow) {
+    public InstructionDumper(PcodeOp pcodeOp, CodeBlockWrapper parent, Controlflow controlflow) {
         this.parent = parent;
         this.pcodeOp = pcodeOp;
         this.controlflow = controlflow;
@@ -32,7 +32,7 @@ public class InstructionDumper {
         jsonObject.addProperty("id", id);
 
         jsonObject.addProperty("type", "instruction");
-        jsonObject.addProperty("parent", parent.getFirstStartAddress().toString());
+        jsonObject.addProperty("parent", parent.unwrap().getFirstStartAddress().toString());
         jsonObject.addProperty("operation", PcodeOpString.get(pcodeOp.getOpcode()));
 
         if (pcodeOp.isAssignment()) {

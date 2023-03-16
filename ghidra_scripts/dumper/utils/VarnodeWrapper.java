@@ -1,4 +1,4 @@
-package dumper;
+package dumper.utils;
 
 import ghidra.program.model.pcode.Varnode;
 
@@ -15,6 +15,6 @@ public class VarnodeWrapper implements Comparable<VarnodeWrapper> {
 
     @Override
     public int compareTo(VarnodeWrapper other) {
-        return varnode.toString().compareTo(other.unwrap().toString());
+        return varnode.toString().compareTo(other.varnode.toString());
     }
 }

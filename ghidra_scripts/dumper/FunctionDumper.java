@@ -1,22 +1,20 @@
 package dumper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import dumper.utils.Controlflow;
 import dumper.utils.SeqCounter;
-import ghidra.program.model.block.BasicBlockModel;
-import ghidra.program.model.block.CodeBlock;
+import dumper.utils.VarnodeWrapper;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.pcode.PcodeOp;
 import ghidra.util.exception.CancelledException;
-import ghidra.util.task.TaskMonitor;
 
 public class FunctionDumper {
     private final Program program;
@@ -25,49 +23,41 @@ public class FunctionDumper {
     private final SeqCounter counter;
     private final Controlflow controlflow;
 
-    private final Map<CodeBlock, List<PcodeOp>> basicBlockToPcodeOp;
-    private final List<VarnodeWrapper> varnodes;
-    private final BasicBlockModel basicBlockModel;
+    private final Set<VarnodeWrapper> varnodes;
 
-    private final ArrayList<InstructionDumper> instructionDumpers;
+    private final List<InstructionDumper> instructionDumpers;
+    private final List<BasicBlockDumper> basicBlockDumpers;
+    private final List<PcodeOp> rawPcodes;
 
     public FunctionDumper(Program program, Function function) throws CancelledException {
         this.program = program;
         this.function = function;
+        this.controlflow = new Controlflow(this.program, this.function);
 
         this.counter = new SeqCounter();
 
-        this.basicBlockToPcodeOp = new HashMap<>();
-        this.varnodes = new ArrayList<>();
-        this.basicBlockModel = new BasicBlockModel(this.program);
+        this.varnodes = new TreeSet<>();
 
         this.instructionDumpers = new ArrayList<>();
-
-        for (var block : basicBlockModel.getCodeBlocks(TaskMonitor.DUMMY)) {
-            if (function.getBody().contains(block.getFirstStartAddress())) {
-                basicBlockToPcodeOp.put(block, new ArrayList<>());
-            }
-        }
-
-        this.controlflow = new Controlflow(function, basicBlockToPcodeOp);
+        this.basicBlockDumpers = new ArrayList<>();
+        this.rawPcodes = new ArrayList<>();
 
         var insts = program.getListing().getInstructions(function.getBody(),
                 true);
         for (var inst : insts) {
-            CodeBlock parent = null;
             List<PcodeOp> list = null;
-            for (var pair : basicBlockToPcodeOp.entrySet()) {
-                if (pair.getKey().contains(inst.getAddress())) {
-                    parent = pair.getKey();
+            for (var pair : controlflow.getBasicBlockToPcodeOp().entrySet()) {
+                if (pair.getKey().unwrap().contains(inst.getAddress())) {
                     list = pair.getValue();
                     break;
                 }
             }
-            assert (parent != null && list != null);
+            assert (list != null);
 
             for (var pcode : inst.getPcode()) {
                 pcode.getSeqnum().setOrder(counter.next());
                 list.add(pcode);
+                rawPcodes.add(pcode);
                 if (pcode.isAssignment()) {
                     varnodes.add(new VarnodeWrapper(pcode.getOutput()));
                 }
@@ -77,12 +67,16 @@ public class FunctionDumper {
             }
         }
 
-        for (var pair : basicBlockToPcodeOp.entrySet()) {
-            CodeBlock parent = pair.getKey();
-            List<PcodeOp> list = pair.getValue();
+        for (var pair : controlflow.getBasicBlockToPcodeOp().entrySet()) {
+            var parent = pair.getKey();
+            var list = pair.getValue();
             for (var inst : list) {
                 instructionDumpers.add(new InstructionDumper(inst, parent, controlflow));
             }
+        }
+
+        for (var codeBlock : controlflow.getBasicBlockToPcodeOp().keySet()) {
+            basicBlockDumpers.add(new BasicBlockDumper(codeBlock, controlflow));
         }
 
     }
@@ -106,10 +100,16 @@ public class FunctionDumper {
         jsonObject.add("instructions", instArray);
 
         final var basicBlockArray = new JsonArray();
-        // for (final var dumper : dumpers) {
-        // basicBlockArray.add(dumper.toJson());
-        // }
+        for (final var dumper : basicBlockDumpers) {
+            basicBlockArray.add(dumper.toJson());
+        }
         jsonObject.add("basic-blocks", basicBlockArray);
+
+        final var rawArray = new JsonArray();
+        for (final var pcode : rawPcodes) {
+            rawArray.add(pcode.toString());
+        }
+        jsonObject.add("raw", rawArray);
 
         return jsonObject;
     }

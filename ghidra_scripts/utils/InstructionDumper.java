@@ -23,7 +23,7 @@ public class InstructionDumper {
     public JsonObject toJson() {
         final var jsonObject = new JsonObject();
 
-        jsonObject.addProperty("id", id);
+        jsonObject.addProperty("id", pcodeOp.getSeqnum().getOrder());
 
         jsonObject.addProperty("type", "instruction");
         jsonObject.addProperty("parent", pcodeOp.getParent().getStart().toString());

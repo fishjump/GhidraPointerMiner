@@ -47,7 +47,8 @@ auto parse(const std::string &name) {
 
 } // namespace
 
-Value::Value(const std::string &meta) : meta_(meta), value_type_() {
+Value::Value(const std::string &meta)
+    : meta_(meta), value_type_(), is_final_(false) {
   const auto [type, id, size] = parse(meta_);
   type_ = type;
   id_ = id;
@@ -56,13 +57,20 @@ Value::Value(const std::string &meta) : meta_(meta), value_type_() {
   value_type_.initiate();
 }
 
-Value::Value(const boost::json::string &meta) : Value(std::string(meta)) {}
+Value::Value(const boost::json::string &meta) : Value(std::string(meta)) {
+}
 
-const std::string &Value::getType() const { return type_; }
+const std::string &Value::getType() const {
+  return type_;
+}
 
-size_t Value::getId() const { return id_; }
+size_t Value::getId() const {
+  return id_;
+}
 
-size_t Value::getSize() const { return size_; }
+size_t Value::getSize() const {
+  return size_;
+}
 
 bool Value::operator==(const Value &rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_;
@@ -72,7 +80,9 @@ bool Value::operator<(const Value &rhs) const {
   return this->type_ < rhs.type_ && this->id_ < rhs.id_;
 }
 
-Value::operator std::string() const { return meta_; }
+Value::operator std::string() const {
+  return meta_ + (is_final_ ? " (final)" : "");
+}
 
 void Value::addDef(Instruction *user, Instruction *def) {
   BOOST_ASSERT_MSG(user != nullptr, "user cannot be nullptr");
@@ -92,4 +102,10 @@ void Value::deduceType(const boost::statechart::event_base &event) {
 void Value::propagateTo(Value *value) {
   value_type_.propagateTo(&value->value_type_);
 }
-std::string Value::getValueType() const { return value_type_.type(); }
+std::string Value::getValueType() const {
+  return value_type_.type();
+}
+
+void Value::setFinal(bool is_final) {
+  is_final_ = is_final;
+}

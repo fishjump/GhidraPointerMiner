@@ -58,8 +58,8 @@ void printUDChain(pointer_solver::Function *f,
 
 } // namespace
 
-int main() {
-  auto json_str = read("example/example2/dump.json");
+int main(int argc, char *argv[]) {
+  auto json_str = read(argv[1]);
 
   auto json_obj = boost::json::parse(json_str);
   BOOST_ASSERT_MSG(json_obj.is_object(),
@@ -117,6 +117,13 @@ int main() {
     for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
       auto &inst = it->second;
       func->deduceType(&inst);
+    }
+
+    for (auto it = func->var_begin(); it != func->var_end(); ++it) {
+      auto &var = it->second;
+      if (var.getDefs().empty()) {
+        var.setFinal(true);
+      }
     }
   }
 

@@ -5,15 +5,17 @@
 using namespace pointer_solver;
 
 std::string TypeDeducer::type() const {
-  if (state_downcast<const Int *>()) {
+  if (state_cast<const Int *>()) {
     return "Int";
-  } else if (state_downcast<const Bool *>()) {
+  } else if (state_cast<const Bool *>()) {
     return "Bool";
-  } else if (state_downcast<const Float *>()) {
+  } else if (state_cast<const Float *>()) {
     return "Float";
-  } else if (state_downcast<const Pointer *>()) {
+  } else if (state_cast<const Pointer *>()) {
     return "Pointer";
-  } else if (state_downcast<const Unknown *>()) {
+  } else if (state_cast<const PointerOfPointer *>()) {
+    return "PointerOfPointer";
+  } else if (state_cast<const Unknown *>()) {
     return "Unknown";
   }
 
@@ -22,16 +24,16 @@ std::string TypeDeducer::type() const {
 }
 
 void TypeDeducer::propagateTo(TypeDeducer *target) const {
-  if (state_downcast<const Int *>()) {
+  if (state_cast<const Int *>()) {
     target->process_event(ToInt());
     return;
-  } else if (state_downcast<const Bool *>()) {
+  } else if (state_cast<const Bool *>()) {
     target->process_event(ToBool());
     return;
-  } else if (state_downcast<const Float *>()) {
+  } else if (state_cast<const Float *>()) {
     target->process_event(ToFloat());
     return;
-  } else if (state_downcast<const Pointer *>()) {
+  } else if (state_cast<const Pointer *>()) {
     target->process_event(ToPointer());
     return;
   }

@@ -11,14 +11,17 @@ import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
 
 public class ProgramDumper {
-    final Program program;
-    final List<Function> functions;
+    private final Program program;
+    private final List<Function> functions;
 
     public ProgramDumper(Program program) {
         this.program = program;
 
         functions = new ArrayList<>();
         for (final var function : this.program.getFunctionManager().getFunctionsNoStubs(true)) {
+            if (function.isExternal() || function.isThunk()) {
+                continue;
+            }
             functions.add(function);
         }
     }

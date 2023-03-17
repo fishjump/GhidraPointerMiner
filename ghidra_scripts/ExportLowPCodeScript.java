@@ -17,6 +17,14 @@ public class ExportLowPCodeScript extends GhidraScript {
     public void run() throws Exception {
         // Convert the P-Code to a JSON array
         var programDumper = new ProgramDumper(currentProgram);
+        for (final var function : currentProgram.getFunctionManager().getFunctionsNoStubs(true)) {
+            // if (function.getName().equals("entry"))
+            if (function.isExternal() || function.isThunk()) {
+                continue;
+            }
+            println(function.getName());
+            println(function.getEntryPoint().toString());
+        }
         var jsonObject = programDumper.toJson();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

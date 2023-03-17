@@ -52,89 +52,17 @@ void sanity_guard(const boost::json::object &json_obj) {
   }
 }
 
-} // namespace
-
-Function::Function(const boost::json::object &json_obj) {
-  sanity_guard(json_obj);
-
-  name_ = json_obj.at("name").as_string();
-
-  for (const auto &var : json_obj.at("variables").as_array()) {
-    variables_.emplace(var.as_string(), var.as_string());
-  }
-
-  for (const auto &inst : json_obj.at("instructions").as_array()) {
-    auto tmp = Instruction(this, inst.as_object());
-    insts_.emplace(tmp.getId(), tmp);
-  }
-
-  for (const auto &block : json_obj.at("basic-blocks").as_array()) {
-    auto tmp = BasicBlock(this, block.as_object());
-    blocks_.emplace(tmp.getId(), tmp);
-  }
-
-  for (auto &[_, inst] : insts_) {
-    inst.build();
-  }
-
-  for (auto &[_, block] : blocks_) {
-    block.build();
-  }
-}
-
-const std::string &Function::getName() {
-  return name_;
-}
-
-std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
-Function::getUseDefChain(
-    Instruction *inst, std::set<const Instruction *> visited,
-    std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain) {
+void deduceType(Instruction *inst, std::set<Instruction *> visited) {
   if (visited.find(inst) != visited.end()) {
-    return ud_chain;
+    return;
   }
   visited.insert(inst);
 
-  // is a not assignment instruction, skip
-  auto def_val = inst->getResult();
-  if (def_val != nullptr && ud_chain->find(def_val) != ud_chain->end()) {
-    ud_chain->at(def_val).push_back(inst);
-  }
-
-  for (auto p_inst : inst->getPreds()) {
-    getUseDefChain(p_inst, visited, ud_chain);
-  }
-
-  return ud_chain;
-}
-
-std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
-Function::getUseDefChain(Instruction *inst) {
-  std::map<Value *, std::vector<Instruction *>> map;
-  for (auto &operand : inst->getOperands()) {
-    map.insert({operand, {}});
-  }
-
-  auto res = std::make_shared<decltype(map)>(map);
-
-  for (auto p_inst : inst->getPreds()) {
-    getUseDefChain(p_inst, {}, res);
-  }
-
-  for (auto &[val, defs] : *res) {
-    for (auto *def : defs) {
-      val->addDef(inst, def);
-    }
-  }
-
-  return res;
-}
-
-void deduceType(std::vector<Instruction *> path) {
-  auto inst = path.back();
-
-  if (inst->getOp() == "LOAD" && inst->getResult() != nullptr &&
+  if (inst->getOp() == "COPY" && inst->getResult() != nullptr &&
       inst->getOperands().size() == 1) {
+    Copy().deduceType(inst->getResult(), inst->getOperands()[0]);
+  } else if (inst->getOp() == "LOAD" && inst->getResult() != nullptr &&
+             inst->getOperands().size() == 1) {
     Load().deduceType(inst->getResult(), inst->getOperands()[0]);
   } else if (inst->getOp() == "LOAD" && inst->getResult() != nullptr &&
              inst->getOperands().size() == 2) {
@@ -352,23 +280,100 @@ void deduceType(std::vector<Instruction *> path) {
                         inst->getOperands()[1]);
   }
 
-  // // propagate type
+  // propagate type
   for (auto &operand : inst->getOperands()) {
     auto defs = operand->getDefs().find(inst);
     if (defs == operand->getDefs().end()) {
       continue;
     }
+
     for (auto &def : defs->second) {
-      auto new_path = path;
-      new_path.push_back(def);
-      deduceType(new_path);
+      deduceType(def, visited);
     }
   }
 }
 
+} // namespace
+
+Function::Function(const boost::json::object &json_obj) {
+  sanity_guard(json_obj);
+
+  name_ = json_obj.at("name").as_string();
+
+  for (const auto &var : json_obj.at("variables").as_array()) {
+    variables_.emplace(var.as_string(), var.as_string());
+  }
+
+  for (const auto &inst : json_obj.at("instructions").as_array()) {
+    auto tmp = Instruction(this, inst.as_object());
+    insts_.emplace(tmp.getId(), tmp);
+  }
+
+  for (const auto &block : json_obj.at("basic-blocks").as_array()) {
+    auto tmp = BasicBlock(this, block.as_object());
+    blocks_.emplace(tmp.getId(), tmp);
+  }
+
+  for (auto &[_, inst] : insts_) {
+    inst.build();
+  }
+
+  for (auto &[_, block] : blocks_) {
+    block.build();
+  }
+}
+
+const std::string &Function::getName() {
+  return name_;
+}
+
+std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
+Function::getUseDefChain(
+    Instruction *inst, std::set<const Instruction *> visited,
+    std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain) {
+  if (visited.find(inst) != visited.end()) {
+    return ud_chain;
+  }
+  visited.insert(inst);
+
+  // is a not assignment instruction, skip
+  auto def_val = inst->getResult();
+  if (def_val != nullptr && ud_chain->find(def_val) != ud_chain->end()) {
+    ud_chain->at(def_val).push_back(inst);
+  }
+
+  for (auto p_inst : inst->getPreds()) {
+    getUseDefChain(p_inst, visited, ud_chain);
+  }
+
+  return ud_chain;
+}
+
+std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
+Function::getUseDefChain(Instruction *inst) {
+  std::map<Value *, std::vector<Instruction *>> map;
+  for (auto &operand : inst->getOperands()) {
+    map.insert({operand, {}});
+  }
+
+  auto res = std::make_shared<decltype(map)>(map);
+
+  for (auto p_inst : inst->getPreds()) {
+    getUseDefChain(p_inst, {}, res);
+  }
+
+  for (auto &[val, defs] : *res) {
+    for (auto *def : defs) {
+      val->addDef(inst, def);
+    }
+  }
+
+  return res;
+}
+
 void Function::deduceType(Instruction *inst) {
-  std::vector<Instruction *> path{inst};
-  ::deduceType(path);
+  std::set<Instruction *> visited;
+  ::deduceType(inst, visited);
 }
 
 Function::BasicBlockContainerType::iterator Function::begin() {

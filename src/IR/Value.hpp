@@ -18,6 +18,7 @@ class Value {
   std::string type_;
   size_t id_;
   size_t size_;
+  bool is_final_;
 
   std::map<Instruction *, std::vector<Instruction *>> defs_;
 
@@ -31,6 +32,7 @@ public:
   size_t getId() const;
   size_t getSize() const;
 
+  void setFinal(bool is_final);
   void propagateTo(Value *value);
   void deduceType(const boost::statechart::event_base &event);
   std::string getValueType() const;

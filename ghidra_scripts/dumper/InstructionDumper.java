@@ -57,7 +57,9 @@ public class InstructionDumper {
             var predBlocks = controlflow.getPredecessors().get(parent);
             for (var block : predBlocks) {
                 var insts = controlflow.getBasicBlockToPcodeOp().get(block);
-                assert (insts.size() > 0);
+                if (insts == null || insts.size() > 0) {
+                    continue;
+                }
 
                 var lastInst = insts.get(insts.size() - 1);
                 predArray.add(lastInst.getSeqnum().getOrder());
@@ -74,7 +76,9 @@ public class InstructionDumper {
             var succBlocks = controlflow.getSuccessors().get(parent);
             for (var block : succBlocks) {
                 var insts = controlflow.getBasicBlockToPcodeOp().get(block);
-                assert (insts.size() > 0);
+                if (insts == null || insts.size() > 0) {
+                    continue;
+                }
 
                 var firstInst = insts.get(0);
                 predArray.add(firstInst.getSeqnum().getOrder());

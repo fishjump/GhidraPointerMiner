@@ -4,13 +4,67 @@
 
 namespace pointer_solver {
 
+inline void deduceTypeIntLogicGeneric(Value *output, Value *input0,
+                                      Value *input1) {
+  if (input0->getValueType() == "PointerOfPointer" ||
+      input1->getValueType() == "PointerOfPointer") {
+    input0->deduceType(ToPointerOfPointer());
+    input1->deduceType(ToPointerOfPointer());
+  } else if (input0->getValueType() == "Pointer" ||
+             input1->getValueType() == "Pointer") {
+    input0->deduceType(ToPointer());
+    input1->deduceType(ToPointer());
+  } else {
+    input0->deduceType(ToInt());
+    input1->deduceType(ToInt());
+  }
+
+  output->deduceType(ToBool());
+}
+
+inline void deduceTypeIntBinaryGeneric(Value *output, Value *input0,
+                                       Value *input1) {
+  if (output->getValueType() == "PointerOfPointer" ||
+      input0->getValueType() == "PointerOfPointer" ||
+      input1->getValueType() == "PointerOfPointer") {
+    output->deduceType(ToPointerOfPointer());
+    input0->deduceType(ToPointerOfPointer());
+    input1->deduceType(ToPointerOfPointer());
+  } else if (output->getValueType() == "Pointer" ||
+             input0->getValueType() == "Pointer" ||
+             input1->getValueType() == "Pointer") {
+    output->deduceType(ToPointer());
+    input0->deduceType(ToPointer());
+    input1->deduceType(ToPointer());
+  } else {
+    output->deduceType(ToInt());
+    input0->deduceType(ToInt());
+    input1->deduceType(ToInt());
+  }
+}
+
+inline void deduceTypeIntUnaryGeneric(Value *output, Value *input0) {
+  if (output->getValueType() == "PointerOfPointer" ||
+      input0->getValueType() == "PointerOfPointer") {
+    output->deduceType(ToPointerOfPointer());
+    input0->deduceType(ToPointerOfPointer());
+  } else if (output->getValueType() == "Pointer" ||
+             input0->getValueType() == "Pointer") {
+    output->deduceType(ToPointer());
+    input0->deduceType(ToPointer());
+  } else {
+    output->deduceType(ToInt());
+    input0->deduceType(ToInt());
+  }
+}
+
 struct Copy {
   // output = COPY input0
   // output: should be the same type as input0
   // input0: should be the same type as output
   void deduceType(Value *output, Value *input0) {
-    output->propagateTo(input0);
-    input0->propagateTo(output);
+    output->deduceType(ToSome(input0->getValueType()));
+    input0->deduceType(ToSome(output->getValueType()));
   }
 };
 
@@ -19,7 +73,11 @@ struct Load {
   // output: cannot deduce the type
   // input0: should be a pointer
   void deduceType(Value *output, Value *input0) {
-    input0->deduceType(ToPointer());
+    if (output->getValueType() == "Pointer") {
+      input0->deduceType(ToPointerOfPointer());
+    } else {
+      input0->deduceType(ToPointer());
+    }
   }
 
   // output = LOAD input0, input1
@@ -27,8 +85,13 @@ struct Load {
   // input0: should be a pointer
   // input1: should be an integer offset
   void deduceType(Value *output, Value *input0, Value *input1) {
-    input0->deduceType(ToPointer());
-    input1->deduceType(ToInt());
+    if (output->getValueType() == "Pointer") {
+      input0->deduceType(ToPointerOfPointer());
+      input1->deduceType(ToPointerOfPointer());
+    } else {
+      input0->deduceType(ToPointer());
+      input1->deduceType(ToPointer());
+    }
   }
 };
 
@@ -37,7 +100,11 @@ struct Store {
   // input0: should be a pointer
   // input1: cannot deduce the type
   void deduceType(Value *input0, Value *input1) {
-    input0->deduceType(ToPointer());
+    if (input1->getValueType() == "Pointer") {
+      input0->deduceType(ToPointerOfPointer());
+    } else {
+      input0->deduceType(ToPointer());
+    }
   }
 
   // STORE input0, input1, input2
@@ -45,8 +112,13 @@ struct Store {
   // input1: should be an integer offset
   // input2: cannot deduce the type
   void deduceType(Value *input0, Value *input1, Value *input2) {
-    input0->deduceType(ToPointer());
-    input1->deduceType(ToInt());
+    if (input2->getValueType() == "Pointer") {
+      input0->deduceType(ToPointerOfPointer());
+      input1->deduceType(ToPointerOfPointer());
+    } else {
+      input0->deduceType(ToPointer());
+      input1->deduceType(ToPointer());
+    }
   }
 };
 
@@ -126,9 +198,7 @@ struct IntEqual {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -138,9 +208,7 @@ struct IntNotEqual {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -150,9 +218,7 @@ struct IntLess {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -162,9 +228,7 @@ struct IntSLess {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -174,9 +238,7 @@ struct IntLessEqual {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -186,9 +248,7 @@ struct IntSLessEqual {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -197,8 +257,7 @@ struct IntZExt {
   // output: should be an integer
   // input0: should be an integer
   void deduceType(Value *output, Value *input0) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
+    deduceTypeIntUnaryGeneric(output, input0);
   }
 };
 
@@ -207,8 +266,7 @@ struct IntSExt {
   // output: should be an integer
   // input0: should be an integer
   void deduceType(Value *output, Value *input0) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
+    deduceTypeIntUnaryGeneric(output, input0);
   }
 };
 
@@ -218,9 +276,7 @@ struct IntAdd {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -230,9 +286,7 @@ struct IntSub {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -242,9 +296,7 @@ struct IntCarry {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -254,9 +306,7 @@ struct IntSCarry {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -266,9 +316,7 @@ struct IntSBorrow {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToBool());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntLogicGeneric(output, input0, input1);
   }
 };
 
@@ -277,8 +325,7 @@ struct Int2Comp {
   // output: should be an integer
   // input0: should be an integer
   void deduceType(Value *output, Value *input0) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
+    deduceTypeIntUnaryGeneric(output, input0);
   }
 };
 
@@ -287,8 +334,7 @@ struct IntNegate {
   // output: should be an integer
   // input0: should be an integer
   void deduceType(Value *output, Value *input0) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
+    deduceTypeIntUnaryGeneric(output, input0);
   }
 };
 
@@ -298,9 +344,7 @@ struct IntXor {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -310,9 +354,7 @@ struct IntAnd {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -322,9 +364,7 @@ struct IntOr {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -334,9 +374,7 @@ struct IntLeft {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -346,9 +384,7 @@ struct IntRight {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -358,9 +394,7 @@ struct IntSRight {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -370,9 +404,7 @@ struct IntMult {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -382,9 +414,7 @@ struct IntDiv {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -394,9 +424,7 @@ struct IntRem {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -406,9 +434,7 @@ struct IntSDiv {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 
@@ -418,9 +444,7 @@ struct IntSRem {
   // input0: should be an integer
   // input1: should be an integer
   void deduceType(Value *output, Value *input0, Value *input1) {
-    output->deduceType(ToInt());
-    input0->deduceType(ToInt());
-    input1->deduceType(ToInt());
+    deduceTypeIntBinaryGeneric(output, input0, input1);
   }
 };
 

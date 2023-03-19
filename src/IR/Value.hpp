@@ -33,7 +33,6 @@ public:
   size_t getSize() const;
 
   void setFinal(bool is_final);
-  void propagateTo(Value *value);
   void deduceType(const boost::statechart::event_base &event);
   std::string getValueType() const;
 

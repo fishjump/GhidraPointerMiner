@@ -99,9 +99,6 @@ void Value::deduceType(const boost::statechart::event_base &event) {
   value_type_.process_event(event);
 }
 
-void Value::propagateTo(Value *value) {
-  value_type_.propagateTo(&value->value_type_);
-}
 std::string Value::getValueType() const {
   return value_type_.type();
 }

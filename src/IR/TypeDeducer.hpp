@@ -17,7 +17,6 @@ struct Unknown;
 // The initial state
 struct TypeDeducer : boost::statechart::state_machine<TypeDeducer, Unknown> {
   std::string type() const;
-  void propagateTo(TypeDeducer *target) const;
 };
 
 // Events
@@ -28,26 +27,26 @@ struct ToPointer : boost::statechart::event<ToPointer> {};
 struct ToPointerOfPointer : boost::statechart::event<ToPointerOfPointer> {};
 struct Idle : boost::statechart::event<Idle> {};
 
-inline const boost::statechart::event_base &&ToSome(const std::string &type) {
+inline std::shared_ptr<boost::statechart::event_base>
+ToSome(const std::string &type) {
   if (type == "Int") {
-    return std::move(ToInt());
+    return std::make_shared<ToInt>();
   } else if (type == "Bool") {
-    return std::move(ToBool());
+    return std::make_shared<ToBool>();
   } else if (type == "Float") {
-    return std::move(ToFloat());
+    return std::make_shared<ToFloat>();
   } else if (type == "Pointer") {
-    return std::move(ToPointer());
+    return std::make_shared<ToPointer>();
+  } else if (type == "PointerOfPointer") {
+    return std::make_shared<ToPointerOfPointer>();
   }
 
-  return std::move(Idle());
+  return std::make_shared<Idle>();
 }
 
 // States
 struct Int : boost::statechart::simple_state<Int, TypeDeducer> {
-  typedef boost::mpl::list<
-      boost::statechart::transition<ToPointer, Pointer>,
-      boost::statechart::transition<ToPointerOfPointer, PointerOfPointer>>
-      reactions;
+  typedef boost::statechart::transition<ToPointer, Pointer> reactions;
 };
 
 struct Bool : boost::statechart::simple_state<Bool, TypeDeducer> {
@@ -69,12 +68,9 @@ struct PointerOfPointer
 };
 
 struct Unknown : boost::statechart::simple_state<Unknown, TypeDeducer> {
-  typedef boost::mpl::list<
-      boost::statechart::transition<ToInt, Int>,
-      boost::statechart::transition<ToBool, Bool>,
-      boost::statechart::transition<ToFloat, Float>,
-      boost::statechart::transition<ToPointer, Pointer>,
-      boost::statechart::transition<ToPointerOfPointer, PointerOfPointer>>
+  typedef boost::mpl::list<boost::statechart::transition<ToInt, Int>,
+                           boost::statechart::transition<ToBool, Bool>,
+                           boost::statechart::transition<ToFloat, Float>>
       reactions;
 };
 

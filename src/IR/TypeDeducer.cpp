@@ -22,22 +22,3 @@ std::string TypeDeducer::type() const {
   BOOST_ASSERT_MSG(false, "shouldn't reach here");
   return "Unknown";
 }
-
-void TypeDeducer::propagateTo(TypeDeducer *target) const {
-  if (state_cast<const Int *>()) {
-    target->process_event(ToInt());
-    return;
-  } else if (state_cast<const Bool *>()) {
-    target->process_event(ToBool());
-    return;
-  } else if (state_cast<const Float *>()) {
-    target->process_event(ToFloat());
-    return;
-  } else if (state_cast<const Pointer *>()) {
-    target->process_event(ToPointer());
-    return;
-  }
-
-  // Do nothing
-  target->process_event(Idle());
-}

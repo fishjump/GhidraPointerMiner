@@ -106,3 +106,7 @@ std::string Value::getValueType() const {
 void Value::setFinal(bool is_final) {
   is_final_ = is_final;
 }
+
+bool Value::isFinal() {
+  return is_final_;
+}

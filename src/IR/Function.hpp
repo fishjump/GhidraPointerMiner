@@ -30,7 +30,7 @@ public:
   const std::string &getName();
 
   std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> getUseDefChain(
-      Instruction *inst, std::set<const Instruction *> visited,
+      Instruction *inst, std::set<const Instruction *> &visited,
       std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain);
 
   std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>

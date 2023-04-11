@@ -122,7 +122,7 @@ static const std::map<std::string, std::shared_ptr<Operation>> opHandlers = {
     {"BOOL_OR", std::make_shared<BoolOr>()},
 };
 
-void roughDeduce(Instruction *inst, std::set<Instruction *> visited) {
+void roughDeduce(Instruction *inst, std::set<Instruction *> &visited) {
   if (visited.find(inst) != visited.end()) {
     return;
   }
@@ -132,7 +132,7 @@ void roughDeduce(Instruction *inst, std::set<Instruction *> visited) {
     auto handler = opHandlers.at(inst->getOp());
     handler->roughDeduce(inst);
   } else {
-    std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
+    // std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
   }
 
   // propagate type
@@ -148,7 +148,7 @@ void roughDeduce(Instruction *inst, std::set<Instruction *> visited) {
   }
 }
 
-void preciseDeduceStage1(Instruction *inst, std::set<Instruction *> visited) {
+void preciseDeduceStage1(Instruction *inst, std::set<Instruction *> &visited) {
   if (visited.find(inst) != visited.end()) {
     return;
   }
@@ -158,7 +158,7 @@ void preciseDeduceStage1(Instruction *inst, std::set<Instruction *> visited) {
     auto handler = opHandlers.at(inst->getOp());
     handler->preciseDeduceStage1(inst);
   } else {
-    std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
+    // std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
   }
 
   // propagate type
@@ -174,7 +174,7 @@ void preciseDeduceStage1(Instruction *inst, std::set<Instruction *> visited) {
   }
 }
 
-void preciseDeduceStage2(Instruction *inst, std::set<Instruction *> visited) {
+void preciseDeduceStage2(Instruction *inst, std::set<Instruction *> &visited) {
   if (visited.find(inst) != visited.end()) {
     return;
   }
@@ -184,7 +184,7 @@ void preciseDeduceStage2(Instruction *inst, std::set<Instruction *> visited) {
     auto handler = opHandlers.at(inst->getOp());
     handler->preciseDeduceStage2(inst);
   } else {
-    std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
+    // std::cerr << "unsupported operation: " << inst->getOp() << std::endl;
   }
 
   // propagate type
@@ -236,7 +236,7 @@ const std::string &Function::getName() {
 
 std::shared_ptr<std::map<Value *, std::vector<Instruction *>>>
 Function::getUseDefChain(
-    Instruction *inst, std::set<const Instruction *> visited,
+    Instruction *inst, std::set<const Instruction *> &visited,
     std::shared_ptr<std::map<Value *, std::vector<Instruction *>>> ud_chain) {
   if (visited.find(inst) != visited.end()) {
     return ud_chain;
@@ -264,9 +264,10 @@ Function::getUseDefChain(Instruction *inst) {
   }
 
   auto res = std::make_shared<decltype(map)>(map);
+  std::set<const Instruction *> visited;
 
   for (auto p_inst : inst->getPreds()) {
-    getUseDefChain(p_inst, {}, res);
+    getUseDefChain(p_inst, visited, res);
   }
 
   for (auto &[val, defs] : *res) {
@@ -281,7 +282,11 @@ Function::getUseDefChain(Instruction *inst) {
 void Function::deduceType(Instruction *inst) {
   std::set<Instruction *> visited;
   roughDeduce(inst, visited);
+
+  visited.clear();
   preciseDeduceStage1(inst, visited);
+
+  visited.clear();
   preciseDeduceStage2(inst, visited);
 }
 

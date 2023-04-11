@@ -30,6 +30,9 @@ public class ProgramDumper {
         final var jsonObject = new JsonObject();
         final var jsonArray = new JsonArray();
         for (final var function : functions) {
+            if (function.getName().startsWith("FUN")) {
+                continue;
+            }
             try {
                 var functionDumper = new FunctionDumper(program, function);
                 jsonArray.add(functionDumper.toJson());

@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
   pointer_solver::Program prog(json_obj.as_object());
 
   for (const auto &func : prog) {
+    printf("Performing UD chain for function: %s\n", func->getName().c_str());
     for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
       auto &inst = it->second;
 
@@ -101,19 +102,19 @@ int main(int argc, char *argv[]) {
         }
       } // if (inst.getOp() != "STORE" && inst.getOp() != "LOAD")
 #endif
-
       func->getUseDefChain(&inst);
     }
   }
 
-  for (const auto &func : prog) {
-    for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
-      auto &inst = it->second;
-      printUDChain(func.get(), &inst);
-    }
-  }
+  // for (const auto &func : prog) {
+  //   for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
+  //     auto &inst = it->second;
+  //     printUDChain(func.get(), &inst);
+  //   }
+  // }
 
   for (const auto &func : prog) {
+    printf("Deduce type for function: %s\n", func->getName().c_str());
     for (auto it = func->inst_begin(); it != func->inst_end(); ++it) {
       auto &inst = it->second;
       func->deduceType(&inst);
@@ -131,6 +132,11 @@ int main(int argc, char *argv[]) {
     std::cout << func->getName() << std::endl;
     for (auto it = func->var_begin(); it != func->var_end(); ++it) {
       auto &v = it->second;
+      if (!v.isFinal() || (v.getValueType() != "Pointer" &&
+                           v.getValueType() != "PointerOfPointer")) {
+        continue;
+      }
+
       std::cout << static_cast<std::string>(v) << " : " << v.getValueType()
                 << std::endl;
     }
